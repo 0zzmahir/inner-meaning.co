@@ -1,1 +1,4 @@
-public/robots.txt
+User-agent: *
+Allow: /
+
+Sitemap: https://inner-meaning.com/sitemap.xml
