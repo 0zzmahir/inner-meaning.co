@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
-
 Sitemap: https://inner-meaning.com/sitemap.xml
+google-site-verification: FLcRRJLdzdFBb2tvDxWnGkbAIJ654F_wp5mAzTOyjqk
