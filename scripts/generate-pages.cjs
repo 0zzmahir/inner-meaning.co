@@ -1,43 +1,30 @@
 // scripts/generate-pages.cjs
-
+require("dotenv").config();
 const fs = require("fs");
 const path = require("path");
-require("dotenv").config({ path: ".env.local" });
 
-const apiKey = process.env.OPENROUTER_API_KEY;
-if (!apiKey) {
-  console.error("❌ OPENROUTER_API_KEY bulunamadı.");
+const API_KEY = process.env.OPENROUTER_API_KEY;
+if (!API_KEY) {
+  console.error("❌ OPENROUTER_API_KEY bulunamadı. .env dosyanı kontrol et.");
   process.exit(1);
 }
 
-// ULTRA MODE: aynı anda 20 istek
-const MAX_CONCURRENCY = 20;
+// JSON yolları
+const topicsPath = path.join(__dirname, "..", "data", "topics.json");
+const pagesPath = path.join(__dirname, "..", "data", "pages.generated.json");
 
-// Seçtiğimiz model
-const MODEL_ID = "deepseek/deepseek-r1-0528-qwen3-8b";
+// topics & mevcut sayfalar
+const topics = JSON.parse(fs.readFileSync(topicsPath, "utf8"));
+const existing = fs.existsSync(pagesPath)
+  ? JSON.parse(fs.readFileSync(pagesPath, "utf8"))
+  : [];
 
-const topicsPath = path.join(process.cwd(), "data", "topics.json");
-const pagesPath = path.join(process.cwd(), "data", "pages.generated.json");
+const existingSlugs = new Set(existing.map((p) => p.slug));
 
-// topic ve mevcut sayfaları oku
-const topics = JSON.parse(fs.readFileSync(topicsPath, "utf-8"));
+const systemPrompt = `
+You are a writer for a website called "Inner Meaning".
+Return only a JSON object with this exact shape:
 
-let existing = [];
-if (fs.existsSync(pagesPath)) {
-  try {
-    existing = JSON.parse(fs.readFileSync(pagesPath, "utf-8"));
-  } catch {
-    existing = [];
-  }
-}
-
-async function generate(topic) {
-  const body = {
-    model: MODEL_ID,
-    messages: [
-      {
-        role: "system",
-        content: `Return ONLY a JSON object with this shape:
 {
   "slug": string,
   "title": string,
@@ -54,84 +41,98 @@ async function generate(topic) {
     { "q": string, "a": string }
   ]
 }
-Write around 700-900 words. Do NOT add anything else outside the JSON.`
-      },
-      {
-        role: "user",
-        content: `
-slug: ${topic.slug}
-title: ${topic.title}
-category: ${topic.category}
-focus (TR): ${topic.focus}
-        `
-      }
-    ],
-    temperature: 0.7,
-    response_format: { type: "json_object" }
-  };
+
+Rules:
+- Write in natural, calm, modern English.
+- Do NOT mention that you are an AI.
+- Keep total length around 700-900 words.
+- Do NOT wrap the JSON in backticks.
+`;
+
+// Küçük yardımcı: bekleme (rate limit için)
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+async function generateForTopic(topic) {
+  const userPrompt = `
+Topic:
+- slug: ${topic.slug}
+- title: ${topic.title}
+- category: ${topic.category}
+- focus (TR): ${topic.focus}
+
+Generate the JSON now.
+`;
+
+  console.log(`\n✨ Generating: ${topic.slug}`);
 
   const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${API_KEY}`,
+      "HTTP-Referer": "https://inner-meaning.com",
+      "X-Title": "Inner Meaning Generator",
     },
-    body: JSON.stringify(body)
+    body: JSON.stringify({
+      model: "deepseek/deepseek-r1-0528-qwen3-8b",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
+      temperature: 0.7,
+      response_format: { type: "json_object" },
+    }),
   });
 
-  const data = await res.json();
-
-  if (!res.ok || !data.choices || !data.choices[0]) {
-    console.error("🔴 OpenRouter API HATASI:", JSON.stringify(data, null, 2));
-    throw new Error("OpenRouter API error");
+  if (!res.ok) {
+    const err = await res.text();
+    console.error("❌ API error:", err);
+    throw new Error("API error");
   }
 
-  const content = data.choices[0].message.content;
-  return JSON.parse(content);
+  const data = await res.json();
+  const content = data.choices?.[0]?.message?.content;
+
+  if (!content) {
+    console.error("❌ API response has no content:", data);
+    throw new Error("Empty content");
+  }
+
+  let parsed;
+  try {
+    parsed = JSON.parse(content);
+  } catch (e) {
+    console.error("❌ JSON parse error. Raw content:", content);
+    throw e;
+  }
+
+  // Sayfayı listeye ekle & dosyaya yaz
+  existing.push(parsed);
+  fs.writeFileSync(pagesPath, JSON.stringify(existing, null, 2));
+  console.log(`✅ Saved: ${topic.slug}`);
 }
 
-(async () => {
-  console.log("🚀 Toplam topic:", topics.length);
-  let pages = [...existing];
+async function main() {
+  const remaining = topics.filter((t) => !existingSlugs.has(t.slug));
+  console.log(`\n📚 Toplam topic: ${topics.length}`);
+  console.log(`✅ Zaten üretilen: ${existing.length}`);
+  console.log(`🚀 Üretilecek yeni: ${remaining.length}`);
 
-  // index pointer + worker havuzu
-  let index = 0;
-
-  async function worker(id) {
-    while (true) {
-      let i = index;
-      if (i >= topics.length) break;
-      index++;
-
-      const topic = topics[i];
-
-      if (pages.some((p) => p.slug === topic.slug)) {
-        console.log(`⏭ [W${id}] ZATEN VAR: ${topic.slug}`);
-        continue;
-      }
-
-      console.log(`✏️ [W${id}] ÜRETİLİYOR: ${topic.slug}`);
-
-      try {
-        const page = await generate(topic);
-        pages.push(page);
-
-        // ara ara diske yaz (her yeni sayfada)
-        fs.writeFileSync(pagesPath, JSON.stringify(pages, null, 2));
-        console.log(`✅ [W${id}] EKLENDİ: ${topic.slug}`);
-      } catch (err) {
-        console.error(`❌ [W${id}] HATA: ${topic.slug}`, err.message);
-      }
+  for (const topic of remaining) {
+    try {
+      await generateForTopic(topic);
+      // ufak delay → limit yemeyelim
+      await sleep(1500);
+    } catch (e) {
+      console.error("❌ Hata, bu topic atlandı:", topic.slug);
+      console.error(e);
     }
   }
 
-  // MAX_CONCURRENCY kadar worker başlat
-  const workers = [];
-  for (let w = 1; w <= MAX_CONCURRENCY; w++) {
-    workers.push(worker(w));
-  }
+  console.log("\n🎉 BİTTİ! Tüm yeni sayfalar pages.generated.json içine yazıldı.");
+}
 
-  await Promise.all(workers);
-
-  console.log("🎉 BİTTİ! TOPLAM SAYFA:", pages.length);
-})();
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});
