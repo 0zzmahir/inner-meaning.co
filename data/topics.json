@@ -422,6 +422,630 @@
     "title": "Feeling an Energy Shift in a Room – Meaning",
     "category": "energy-signs",
     "focus": "Describe sudden mood or tension changes in a room as emotional, social, and energetic signals."
+  },
+  {
+    "slug": "feeling-guilty-for-being-happy",
+    "title": "Feeling Guilty for Being Happy – Why?",
+    "category": "Emotional Signals",
+    "focus": "survivor guilt, self-worth issues"
+  },
+  {
+    "slug": "walking-through-walls-freedom",
+    "title": "Walking Through Walls – Breaking Boundaries?",
+    "category": "Strange Events",
+    "focus": "liberation, transcendence, limitation breaking"
+  },
+  {
+    "slug": "teeth-growing-back-stronger",
+    "title": "Teeth Growing Back Stronger – Renewal Sign?",
+    "category": "Body Changes",
+    "focus": "regeneration, confidence restoration, strength"
+  },
+  {
+    "slug": "speaking-ancient-language-fluently",
+    "title": "Speaking Ancient Language Fluently – Past Life?",
+    "category": "Strange Events",
+    "focus": "ancestral memory, soul knowledge, connection"
+  },
+  {
+    "slug": "mirrors-showing-different-person",
+    "title": "Mirrors Showing Different Person – Identity Crisis?",
+    "category": "Mind Patterns",
+    "focus": "self-perception, transformation, hidden self"
+  },
+  {
+    "slug": "breathing-underwater-naturally",
+    "title": "Breathing Underwater Naturally – Emotional Mastery?",
+    "category": "Strange Events",
+    "focus": "emotional navigation, unconscious exploration"
+  },
+  {
+    "slug": "clock-running-backwards",
+    "title": "Clock Running Backwards – Regret Theme?",
+    "category": "Strange Events",
+    "focus": "time anxiety, wanting to undo, nostalgia"
+  },
+  {
+    "slug": "plants-growing-from-skin",
+    "title": "Plants Growing From Skin – Growth or Invasion?",
+    "category": "Body Changes",
+    "focus": "natural connection, growth, boundary issues"
+  },
+  {
+    "slug": "reading-minds-of-strangers",
+    "title": "Reading Minds of Strangers – Intuition Development?",
+    "category": "Strange Events",
+    "focus": "empathy expansion, boundary dissolution, insight"
+  },
+  {
+    "slug": "house-with-infinite-rooms",
+    "title": "House With Infinite Rooms – Unexplored Potential?",
+    "category": "Places",
+    "focus": "hidden aspects, discovery, complexity"
+  },
+  {
+    "slug": "gravity-stops-working",
+    "title": "Gravity Stops Working – Loss of Grounding?",
+    "category": "Strange Events",
+    "focus": "instability, freedom, lack of foundation"
+  },
+  {
+    "slug": "shadow-living-independently",
+    "title": "Shadow Living Independently – Shadow Self?",
+    "category": "Strange Events",
+    "focus": "rejected aspects, duality, integration needed"
+  },
+  {
+    "slug": "eyes-changing-colors-mood",
+    "title": "Eyes Changing Colors With Mood – Transparency Fear?",
+    "category": "Body Changes",
+    "focus": "emotional visibility, authenticity, exposure"
+  },
+  {
+    "slug": "talking-to-deceased-loved-ones",
+    "title": "Talking to Deceased Loved Ones – Closure Needed?",
+    "category": "Relationships",
+    "focus": "grief processing, unfinished business, connection"
+  },
+  {
+    "slug": "books-writing-themselves",
+    "title": "Books Writing Themselves – Channeling Creativity?",
+    "category": "Strange Events",
+    "focus": "unconscious wisdom, creative flow, inspiration"
+  },
+  {
+    "slug": "baby-speaking-full-sentences",
+    "title": "Baby Speaking Full Sentences – Wisdom Recognition?",
+    "category": "Strange Events",
+    "focus": "innocence wisdom, unexpected insight, purity"
+  },
+  {
+    "slug": "losing-ability-to-read",
+    "title": "Losing Ability to Read – Confusion State?",
+    "category": "Mind Patterns",
+    "focus": "comprehension issues, overwhelm, clarity loss"
+  },
+  {
+    "slug": "singing-hypnotizing-people",
+    "title": "Singing Hypnotizing People – Influence Power?",
+    "category": "Strange Events",
+    "focus": "communication power, influence desire, expression"
+  },
+  {
+    "slug": "weather-controlled-by-emotions",
+    "title": "Weather Controlled by Emotions – Impact Awareness?",
+    "category": "Strange Events",
+    "focus": "emotional power, external influence, responsibility"
+  },
+  {
+    "slug": "painting-coming-to-life",
+    "title": "Painting Coming to Life – Creation Manifesting?",
+    "category": "Strange Events",
+    "focus": "manifestation, creative power, imagination reality"
+  },
+  {
+    "slug": "stuck-in-slow-motion",
+    "title": "Stuck in Slow Motion – Frustration Symbol?",
+    "category": "Strange Events",
+    "focus": "progress hindrance, patience testing, control loss"
+  },
+  {
+    "slug": "everyone-speaking-gibberish",
+    "title": "Everyone Speaking Gibberish – Communication Breakdown?",
+    "category": "Strange Events",
+    "focus": "misunderstanding, isolation, confusion"
+  },
+  {
+    "slug": "body-made-of-glass",
+    "title": "Body Made of Glass – Vulnerability Feeling?",
+    "category": "Body Changes",
+    "focus": "fragility, transparency, protection need"
+  },
+  {
+    "slug": "animals-giving-advice",
+    "title": "Animals Giving Advice – Instinct Guidance?",
+    "category": "Strange Events",
+    "focus": "intuition, animal wisdom, natural guidance"
+  },
+  {
+    "slug": "forgetting-own-name",
+    "title": "Forgetting Own Name – Identity Loss?",
+    "category": "Mind Patterns",
+    "focus": "self-identity crisis, disconnection, confusion"
+  },
+  {
+    "slug": "flowers-blooming-where-walk",
+    "title": "Flowers Blooming Where You Walk – Positive Impact?",
+    "category": "Strange Events",
+    "focus": "positive influence, beauty creation, legacy"
+  },
+  {
+    "slug": "music-visible-in-air",
+    "title": "Music Visible in Air – Synesthesia Message?",
+    "category": "Strange Events",
+    "focus": "enhanced perception, beauty awareness, connection"
+  },
+  {
+    "slug": "doors-leading-to-past",
+    "title": "Doors Leading to Past – Unresolved History?",
+    "category": "Places",
+    "focus": "past revisiting, healing opportunity, lessons"
+  },
+  {
+    "slug": "crying-diamonds-instead-tears",
+    "title": "Crying Diamonds Instead of Tears – Valuable Pain?",
+    "category": "Strange Events",
+    "focus": "pain transformation, growth from suffering, value"
+  },
+  {
+    "slug": "becoming-invisible-at-will",
+    "title": "Becoming Invisible at Will – Hiding Desire?",
+    "category": "Strange Events",
+    "focus": "avoidance, protection, visibility issues"
+  },
+  {
+    "slug": "stairs-never-ending",
+    "title": "Stairs Never Ending – Endless Effort?",
+    "category": "Places",
+    "focus": "futility feeling, exhaustion, goal unreachable"
+  },
+  {
+    "slug": "words-manifesting-physically",
+    "title": "Words Manifesting Physically – Speech Power?",
+    "category": "Strange Events",
+    "focus": "word impact, creation power, responsibility"
+  },
+  {
+    "slug": "duplicate-self-everywhere",
+    "title": "Duplicate Self Everywhere – Overwhelm Symbol?",
+    "category": "Strange Events",
+    "focus": "multiple demands, scattered energy, division"
+  },
+  {
+    "slug": "sky-turned-green",
+    "title": "Sky Turned Green – Unnatural Change?",
+    "category": "Strange Events",
+    "focus": "wrong feeling, warning, environmental shift"
+  },
+  {
+    "slug": "hearing-thoughts-as-music",
+    "title": "Hearing Thoughts as Music – Harmony Seeking?",
+    "category": "Strange Events",
+    "focus": "mental harmony, creative thinking, beauty in chaos"
+  },
+  {
+    "slug": "photograph-changing-constantly",
+    "title": "Photograph Changing Constantly – Memory Unreliable?",
+    "category": "Strange Events",
+    "focus": "memory distortion, truth uncertainty, perception"
+  },
+  {
+    "slug": "eating-but-never-full",
+    "title": "Eating But Never Full – Unfulfilled Need?",
+    "category": "Strange Events",
+    "focus": "emotional hunger, satisfaction lacking, void"
+  },
+  {
+    "slug": "tree-with-human-faces",
+    "title": "Tree With Human Faces – Family Roots?",
+    "category": "Strange Events",
+    "focus": "ancestry, connections, family tree awareness"
+  },
+  {
+    "slug": "phone-never-stops-ringing",
+    "title": "Phone Never Stops Ringing – Demand Overwhelm?",
+    "category": "Strange Events",
+    "focus": "obligation pressure, boundary need, overwhelm"
+  },
+  {
+    "slug": "colors-having-taste",
+    "title": "Colors Having Taste – Sensory Integration?",
+    "category": "Strange Events",
+    "focus": "expanded perception, richness, experience depth"
+  },
+  {
+    "slug": "writing-disappearing-as-write",
+    "title": "Writing Disappearing as You Write – Lost Voice?",
+    "category": "Strange Events",
+    "focus": "expression futility, not heard, impermanence"
+  },
+  {
+    "slug": "car-driving-itself",
+    "title": "Car Driving Itself – Control Release?",
+    "category": "Strange Events",
+    "focus": "surrender, trust, autopilot life"
+  },
+  {
+    "slug": "touching-objects-melting",
+    "title": "Touching Objects Makes Them Melt – Destructive Fear?",
+    "category": "Strange Events",
+    "focus": "harmful impact fear, gentleness need, power fear"
+  },
+  {
+    "slug": "moon-following-you",
+    "title": "Moon Following You – Constant Presence?",
+    "category": "Strange Events",
+    "focus": "watchfulness, guidance, can't escape feeling"
+  },
+  {
+    "slug": "building-rearranging-itself",
+    "title": "Building Rearranging Itself – Instability?",
+    "category": "Places",
+    "focus": "environmental change, adaptation need, disorientation"
+  },
+  {
+    "slug": "beard-growing-instantly-long",
+    "title": "Beard Growing Instantly Long – Wisdom Symbol?",
+    "category": "Body Changes",
+    "focus": "maturation, authority, masculine energy"
+  },
+  {
+    "slug": "footprints-turning-into-flowers",
+    "title": "Footprints Turning Into Flowers – Positive Legacy?",
+    "category": "Strange Events",
+    "focus": "impact beauty, path marking, contribution"
+  },
+  {
+    "slug": "rain-falling-upward",
+    "title": "Rain Falling Upward – Reversed Order?",
+    "category": "Strange Events",
+    "focus": "reversal, unnatural process, chaos"
+  },
+  {
+    "slug": "strangers-knowing-your-secrets",
+    "title": "Strangers Knowing Your Secrets – Privacy Breach?",
+    "category": "Relationships",
+    "focus": "exposure fear, vulnerability, privacy loss"
+  },
+  {
+    "slug": "hand-reaching-from-mirror",
+    "title": "Hand Reaching From Mirror – Other Self?",
+    "category": "Strange Events",
+    "focus": "duality, shadow contact, alternative reality"
+  },
+  {
+    "slug": "objects-responding-to-thoughts",
+    "title": "Objects Responding to Thoughts – Mind Power?",
+    "category": "Strange Events",
+    "focus": "manifestation ability, mental power, control"
+  },
+  {
+    "slug": "walking-on-ceiling",
+    "title": "Walking on Ceiling – Perspective Shift?",
+    "category": "Strange Events",
+    "focus": "different viewpoint, unconventional approach, inversion"
+  },
+  {
+    "slug": "scars-appearing-without-injury",
+    "title": "Scars Appearing Without Injury – Invisible Wounds?",
+    "category": "Body Changes",
+    "focus": "emotional trauma, unseen pain, marking"
+  },
+  {
+    "slug": "jewelry-growing-into-skin",
+    "title": "Jewelry Growing Into Skin – Attachment Issues?",
+    "category": "Body Changes",
+    "focus": "material attachment, identity fusion, can't let go"
+  },
+  {
+    "slug": "classroom-full-of-empty-desks",
+    "title": "Classroom Full of Empty Desks – Isolation in Learning?",
+    "category": "Places",
+    "focus": "lonely journey, support lacking, solo path"
+  },
+  {
+    "slug": "butterflies-emerging-from-mouth",
+    "title": "Butterflies Emerging From Mouth – Words Transform?",
+    "category": "Strange Events",
+    "focus": "beautiful expression, transformation speech, release"
+  },
+  {
+    "slug": "swimming-through-clouds",
+    "title": "Swimming Through Clouds – Spiritual Navigation?",
+    "category": "Strange Events",
+    "focus": "higher consciousness, freedom, spiritual movement"
+  },
+  {
+    "slug": "compass-spinning-wildly",
+    "title": "Compass Spinning Wildly – Direction Lost?",
+    "category": "Strange Events",
+    "focus": "confusion, guidance lacking, disorientation"
+  },
+  {
+    "slug": "statue-coming-alive",
+    "title": "Statue Coming Alive – Rigidity Breaking?",
+    "category": "Strange Events",
+    "focus": "awakening, breaking free, animation"
+  },
+  {
+    "slug": "candle-never-burns-out",
+    "title": "Candle Never Burns Out – Eternal Hope?",
+    "category": "Strange Events",
+    "focus": "endurance, light persisting, faith"
+  },
+  {
+    "slug": "road-turning-into-river",
+    "title": "Road Turning Into River – Path Change?",
+    "category": "Strange Events",
+    "focus": "transition, flow needed, rigid to flexible"
+  },
+  {
+    "slug": "machines-obeying-commands",
+    "title": "Machines Obeying Commands – Technology Mastery?",
+    "category": "Strange Events",
+    "focus": "control, competence, harmony with tools"
+  },
+  {
+    "slug": "newspaper-predicting-future",
+    "title": "Newspaper Predicting Future – Premonition?",
+    "category": "Strange Events",
+    "focus": "foresight, intuition, pattern recognition"
+  },
+  {
+    "slug": "skin-changing-texture",
+    "title": "Skin Changing Texture – Protection Mode?",
+    "category": "Body Changes",
+    "focus": "defense mechanism, adaptation, armor"
+  },
+  {
+    "slug": "whispering-walls",
+    "title": "Whispering Walls – Secrets Revealed?",
+    "category": "Strange Events",
+    "focus": "hidden information, surveillance feeling, exposure"
+  },
+  {
+    "slug": "costume-stuck-on-body",
+    "title": "Costume Stuck on Body – False Self?",
+    "category": "Body Changes",
+    "focus": "mask stuck, persona prison, authenticity need"
+  },
+  {
+    "slug": "bridge-appearing-over-chasm",
+    "title": "Bridge Appearing Over Chasm – Solution Arrives?",
+    "category": "Strange Events",
+    "focus": "opportunity, connection made, path forward"
+  },
+  {
+    "slug": "stars-spelling-messages",
+    "title": "Stars Spelling Messages – Cosmic Guidance?",
+    "category": "Strange Events",
+    "focus": "divine communication, signs, universe speaking"
+  },
+  {
+    "slug": "volcano-in-backyard",
+    "title": "Volcano in Backyard – Domestic Eruption?",
+    "category": "Strange Events",
+    "focus": "home turmoil, explosive situation, danger close"
+  },
+  {
+    "slug": "parallel-conversations-simultaneously",
+    "title": "Having Parallel Conversations Simultaneously – Split Focus?",
+    "category": "Strange Events",
+    "focus": "divided attention, multiple demands, overwhelm"
+  },
+  {
+    "slug": "smoke-forming-pictures",
+    "title": "Smoke Forming Pictures – Ephemeral Beauty?",
+    "category": "Strange Events",
+    "focus": "impermanence, fleeting insight, transience"
+  },
+  {
+    "slug": "bottle-containing-ocean",
+    "title": "Bottle Containing Entire Ocean – Potential Compressed?",
+    "category": "Strange Events",
+    "focus": "vast capacity, contained power, compressed potential"
+  },
+  {
+    "slug": "alphabet-missing-letters",
+    "title": "Alphabet Missing Letters – Expression Limited?",
+    "category": "Strange Events",
+    "focus": "communication handicap, missing tools, limitation"
+  },
+  {
+    "slug": "childhood-toy-giant-size",
+    "title": "Childhood Toy Giant Size – Past Looming?",
+    "category": "Strange Events",
+    "focus": "childhood impact, past magnified, nostalgia power"
+  },
+  {
+    "slug": "heartbeat-audible-to-everyone",
+    "title": "Heartbeat Audible to Everyone – Emotional Exposure?",
+    "category": "Strange Events",
+    "focus": "vulnerability visible, inner state exposed, transparency"
+  },
+  {
+    "slug": "tunnel-with-light-both-ends",
+    "title": "Tunnel With Light Both Ends – Choices Equal?",
+    "category": "Places",
+    "focus": "decision balance, multiple paths, uncertainty"
+  },
+  {
+    "slug": "desert-suddenly-blooming",
+    "title": "Desert Suddenly Blooming – Barren to Fertile?",
+    "category": "Strange Events",
+    "focus": "unexpected growth, transformation, hope renewal"
+  },
+  {
+    "slug": "mask-revealing-true-face",
+    "title": "Mask Revealing True Face – Authenticity?",
+    "category": "Strange Events",
+    "focus": "truth revealed, genuine self, honesty"
+  },
+  {
+    "slug": "shouting-but-silence",
+    "title": "Shouting But Only Silence – Unheard Feeling?",
+    "category": "Strange Events",
+    "focus": "voice suppressed, not listened to, frustration"
+  },
+  {
+    "slug": "ice-sculptures-melting-emotions",
+    "title": "Ice Sculptures Melting From Emotions – Thaw Beginning?",
+    "category": "Strange Events",
+    "focus": "emotional warming, defenses melting, vulnerability"
+  },
+  {
+    "slug": "lighthouse-beam-following",
+    "title": "Lighthouse Beam Following You – Guidance Persistent?",
+    "category": "Strange Events",
+    "focus": "constant guidance, can't hide, illumination"
+  },
+  {
+    "slug": "kaleidoscope-vision",
+    "title": "Kaleidoscope Vision – Fragmented Perspective?",
+    "category": "Strange Events",
+    "focus": "multiple angles, complexity, beautiful confusion"
+  },
+  {
+    "slug": "anchor-pulling-underwater",
+    "title": "Anchor Pulling You Underwater – Weighted Down?",
+    "category": "Strange Events",
+    "focus": "burden, can't rise, held back"
+  },
+  {
+    "slug": "echo-answering-questions",
+    "title": "Echo Answering Questions – Self-Knowledge?",
+    "category": "Strange Events",
+    "focus": "own answers, internal wisdom, reflection"
+  },
+  {
+    "slug": "glass-floor-showing-past",
+    "title": "Glass Floor Showing Past Below – Foundation Awareness?",
+    "category": "Strange Events",
+    "focus": "past visible, foundation revealed, transparency"
+  },
+  {
+    "slug": "crown-too-heavy-to-wear",
+    "title": "Crown Too Heavy to Wear – Responsibility Burden?",
+    "category": "Strange Events",
+    "focus": "leadership weight, pressure, unsustainable position"
+  },
+  {
+    "slug": "fountain-youth-running-dry",
+    "title": "Fountain of Youth Running Dry – Aging Acceptance?",
+    "category": "Strange Events",
+    "focus": "time awareness, mortality, resource depletion"
+  },
+  {
+    "slug": "puppet-strings-cutting-themselves",
+    "title": "Puppet Strings Cutting Themselves – Liberation?",
+    "category": "Strange Events",
+    "focus": "freedom, control release, autonomy"
+  },
+  {
+    "slug": "carousel-horses-running-free",
+    "title": "Carousel Horses Running Free – Breaking Cycles?",
+    "category": "Strange Events",
+    "focus": "escape pattern, freedom from routine, liberation"
+  },
+  {
+    "slug": "thermometer-showing-emotions",
+    "title": "Thermometer Showing Emotions – Feeling Measurement?",
+    "category": "Strange Events",
+    "focus": "emotion quantification, awareness, objectivity"
+  },
+  {
+    "slug": "quicksand-turning-solid",
+    "title": "Quicksand Turning Solid – Danger Resolving?",
+    "category": "Strange Events",
+    "focus": "crisis passing, stability emerging, relief"
+  },
+  {
+    "slug": "hourglass-sand-flowing-up",
+    "title": "Hourglass Sand Flowing Upward – Time Reversal?",
+    "category": "Strange Events",
+    "focus": "do-over wish, reversal desire, regret"
+  },
+  {
+    "slug": "typewriter-typing-itself",
+    "title": "Typewriter Typing Itself – Automatic Creativity?",
+    "category": "Strange Events",
+    "focus": "unconscious expression, flow state, channeling"
+  },
+  {
+    "slug": "storm-following-you-everywhere",
+    "title": "Storm Following You Everywhere – Personal Turmoil?",
+    "category": "Strange Events",
+    "focus": "trouble constant, internal chaos, can't escape"
+  },
+  {
+    "slug": "prism-splitting-into-selves",
+    "title": "Prism Splitting You Into Selves – Multi-faceted?",
+    "category": "Strange Events",
+    "focus": "multiple aspects, complexity, division"
+  },
+  {
+    "slug": "origami-unfolding-itself",
+    "title": "Origami Unfolding Itself – Revealing Simplicity?",
+    "category": "Strange Events",
+    "focus": "complexity reducing, truth revealing, simplification"
+  },
+  {
+    "slug": "fireflies-guiding-path",
+    "title": "Fireflies Guiding Your Path – Natural Guidance?",
+    "category": "Strange Events",
+    "focus": "subtle direction, natural signs, gentle leading"
+  },
+  {
+    "slug": "magnifying-glass-showing-truth",
+    "title": "Magnifying Glass Showing Truth – Clarity Tool?",
+    "category": "Strange Events",
+    "focus": "examination, truth revealed, focus needed"
+  },
+  {
+    "slug": "parachute-not-opening",
+    "title": "Parachute Not Opening – Safety Net Failed?",
+    "category": "Strange Events",
+    "focus": "protection failing, free fall, backup needed"
+  },
+  {
+    "slug": "garden-growing-overnight",
+    "title": "Garden Growing Overnight – Rapid Development?",
+    "category": "Strange Events",
+    "focus": "quick progress, sudden growth, cultivation success"
+  },
+  {
+    "slug": "labyrinth-walls-transparent",
+    "title": "Labyrinth Walls Transparent – Solution Visible?",
+    "category": "Places",
+    "focus": "clarity coming, seeing through complexity, insight"
+  },
+  {
+    "slug": "peacock-losing-feathers",
+    "title": "Peacock Losing Feathers – Pride Diminishing?",
+    "category": "Strange Events",
+    "focus": "ego loss, humbling, beauty fading"
+  },
+  {
+    "slug": "scales-never-balancing",
+    "title": "Scales Never Balancing – Justice Elusive?",
+    "category": "Strange Events",
+    "focus": "fairness lacking, imbalance persistent, frustration"
+  },
+  {
+    "slug": "skeleton-key-opening-everything",
+    "title": "Skeleton Key Opening Everything – Universal Access?",
+    "category": "Strange Events",
+    "focus": "solution found, access granted, power tool"
   }
 ]
 
