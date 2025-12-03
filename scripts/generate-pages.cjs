@@ -9,17 +9,25 @@ if (!API_KEY) {
   process.exit(1);
 }
 
+// AYAR: Aynı anda kaç içerik üretilecek?
+const CONCURRENCY = 6; // 6 iyi bir başlangıç. Limit yemezsen 8'e çıkarabilirsin.
+
 // JSON yolları
 const topicsPath = path.join(__dirname, "..", "data", "topics.json");
 const pagesPath = path.join(__dirname, "..", "data", "pages.generated.json");
 
 // topics & mevcut sayfalar
-const topics = JSON.parse(fs.readFileSync(topicsPath, "utf8"));
+const allTopics = JSON.parse(fs.readFileSync(topicsPath, "utf8"));
 const existing = fs.existsSync(pagesPath)
   ? JSON.parse(fs.readFileSync(pagesPath, "utf8"))
   : [];
 
 const existingSlugs = new Set(existing.map((p) => p.slug));
+
+// Üretilecek olanlar (daha önce yazılmamış slug'lar)
+const queue = allTopics.filter(
+  (t) => t.slug && !existingSlugs.has(t.slug)
+);
 
 const systemPrompt = `
 You are a writer for a website called "Inner Meaning".
@@ -49,21 +57,18 @@ Rules:
 - Do NOT wrap the JSON in backticks.
 `;
 
-// Küçük yardımcı: bekleme (rate limit için)
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-
 async function generateForTopic(topic) {
   const userPrompt = `
 Topic:
 - slug: ${topic.slug}
 - title: ${topic.title}
 - category: ${topic.category}
-- focus (TR): ${topic.focus}
+- focus: ${topic.focus}
 
 Generate the JSON now.
 `;
 
-  console.log(`\n✨ Generating: ${topic.slug}`);
+  console.log(`✨ Generating: ${topic.slug}`);
 
   const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
@@ -86,7 +91,7 @@ Generate the JSON now.
 
   if (!res.ok) {
     const err = await res.text();
-    console.error("❌ API error:", err);
+    console.error(`❌ API error for ${topic.slug}:`, err);
     throw new Error("API error");
   }
 
@@ -94,7 +99,7 @@ Generate the JSON now.
   const content = data.choices?.[0]?.message?.content;
 
   if (!content) {
-    console.error("❌ API response has no content:", data);
+    console.error("❌ API response has no content for:", topic.slug, data);
     throw new Error("Empty content");
   }
 
@@ -106,33 +111,65 @@ Generate the JSON now.
     throw e;
   }
 
-  // Sayfayı listeye ekle & dosyaya yaz
+  // Aynı slug'ı bir daha yazma
+  if (existingSlugs.has(parsed.slug)) {
+    console.log(`⏩ Already exists, skipping in runtime: ${parsed.slug}`);
+    return;
+  }
+
   existing.push(parsed);
+  existingSlugs.add(parsed.slug);
+
+  // Her içeriği hemen diske yaz (kapanma / elektrik kesilmesine karşı güvenli)
   fs.writeFileSync(pagesPath, JSON.stringify(existing, null, 2));
-  console.log(`✅ Saved: ${topic.slug}`);
+  console.log(`✅ Saved: ${parsed.slug}`);
+}
+
+async function worker(workerId) {
+  while (true) {
+    // Kuyruktan bir topic çek
+    const topic = queue.shift();
+    if (!topic) {
+      // İş kalmadı, worker çıkıyor
+      return;
+    }
+
+    try {
+      console.log(`👷 Worker ${workerId} started: ${topic.slug}`);
+      await generateForTopic(topic);
+    } catch (e) {
+      console.error(`❌ Worker ${workerId} error on ${topic.slug}:`, e.message);
+      // Hata olduğunda istersen tekrar deneme logic'i buraya ekleyebiliriz.
+    }
+  }
 }
 
 async function main() {
-  const remaining = topics.filter((t) => !existingSlugs.has(t.slug));
-  console.log(`\n📚 Toplam topic: ${topics.length}`);
+  console.log(`\n📚 Toplam topic: ${allTopics.length}`);
   console.log(`✅ Zaten üretilen: ${existing.length}`);
-  console.log(`🚀 Üretilecek yeni: ${remaining.length}`);
+  console.log(`🚀 Üretilecek yeni: ${queue.length}`);
+  console.log(`⚙️ Paralel worker sayısı: ${CONCURRENCY}\n`);
 
-  for (const topic of remaining) {
-    try {
-      await generateForTopic(topic);
-      // ufak delay → limit yemeyelim
-      await sleep(1500);
-    } catch (e) {
-      console.error("❌ Hata, bu topic atlandı:", topic.slug);
-      console.error(e);
-    }
+  if (queue.length === 0) {
+    console.log("👌 Üretilecek yeni topic yok. Çıkılıyor.");
+    return;
   }
 
-  console.log("\n🎉 BİTTİ! Tüm yeni sayfalar pages.generated.json içine yazıldı.");
+  const workerCount = Math.min(CONCURRENCY, queue.length);
+  const workers = [];
+
+  for (let i = 0; i < workerCount; i++) {
+    workers.push(worker(i + 1));
+  }
+
+  await Promise.all(workers);
+
+  console.log(
+    `\n🎉 BİTTİ! Tüm yeni sayfalar pages.generated.json içine yazıldı. Toplam sayfa: ${existing.length}`
+  );
 }
 
 main().catch((e) => {
-  console.error(e);
+  console.error("❌ Beklenmeyen hata:", e);
   process.exit(1);
 });
