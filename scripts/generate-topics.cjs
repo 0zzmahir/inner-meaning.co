@@ -1,17 +1,20 @@
 // scripts/generate-topics.cjs
 // Inner Meaning için OTOMATİK TOPIC FABRİKASI
-// Tek komutla 100K'ya kadar topic üretir, duplike slugsları atlar.
+// Tek komutla 5K topic'e kadar doldurur, duplicate slug'ları atlar.
+
+require("dotenv").config();
 
 const fs = require("fs");
 const path = require("path");
 const fetch = global.fetch || require("node-fetch");
 
 // 🔧 AYARLAR
-const TARGET_TOPIC_COUNT = 2000; // Kaça kadar tamamlasın? 10K / 50K / 100K sen bilirsin.
+const TARGET_TOPIC_COUNT = 5000; // Şimdilik 5K topic yeter
 const BATCH_SIZE = 50; // Her API çağrısında kaç topic istensin.
 const MAX_RETRIES = 3;
 
-const MODEL = "deepseek/deepseek-r1-0325"; // OpenRouter üzerindeki model adın (istersen gpt-4.1-mini yaparsın)
+// Topic için hızlı + ucuz model
+const MODEL = "deepseek/deepseek-chat";
 const API_URL = "https://openrouter.ai/api/v1/chat/completions";
 const API_KEY = process.env.OPENROUTER_API_KEY;
 
@@ -81,6 +84,7 @@ async function main() {
     }
 
     // Yeni topic'leri listeye ekle
+    let added = 0;
     for (const t of batch) {
       const slug = toSlug(t.slug || t.title);
       if (!slug || existingSlugs.has(slug)) continue;
@@ -92,12 +96,15 @@ async function main() {
         focus: t.focus,
       });
       existingSlugs.add(slug);
+      added++;
     }
 
     // Her batch'ten sonra diske yaz (çökerse kaldığın yerden devam et)
     fs.writeFileSync(topicsPath, JSON.stringify(topics, null, 2), "utf8");
 
-    console.log(`✅ Şu an toplam topic sayısı: ${topics.length}`);
+    console.log(
+      `✅ Bu batch ile eklenen yeni topic: ${added} | Şu an toplam: ${topics.length}`
+    );
   }
 
   console.log("\n🎉 TOPIC FABRİKASI BİTTİ!");
@@ -117,14 +124,14 @@ Your job:
   - Emotional signals
   - Mind patterns / psychology
 
-Think like Google users: real, everyday questions people actually type such as:
+Think like real Google users asking about weird repeating experiences, e.g.:
 - "why do i wake up at 3am every night"
 - "left ear burning spiritual meaning"
 - "seeing 11:11 every day meaning"
 - "why do i feel empty when nothing is wrong"
 - "why do my relationships always end after three months"
 
-Return ONLY a JSON array. NO backticks, NO extra text.
+Return ONLY a JSON ARRAY or an OBJECT that contains an array.
 
 Each topic object MUST have this exact shape:
 
@@ -136,20 +143,24 @@ Each topic object MUST have this exact shape:
 }
 
 Rules:
-- All topics must be UNIQUE and not minor variations of each other.
+- All topics must be UNIQUE and not boring repetitions.
 - Use natural, conversational English as people search in Google.
 - Mix all five categories in the batch.
-- Titles should feel like YouTube / blog headlines (but not clickbait).
-- Avoid generic horoscope topics; focus on odd, specific, recurring experiences.
+- Titles should feel like YouTube / blog headlines (but not cheap clickbait).
+- Avoid generic horoscope-only topics; focus on specific, strange, recurring experiences.
 `;
 
   const userPrompt = `
 Generate ${batchSize} brand new topics.
 
-Do NOT include any of these existing slugs (case insensitive): 
+Do NOT reuse any of these existing slugs (case insensitive): 
 ${Array.from(existingSlugs).slice(0, 400).join(", ")}
 
-Return ONLY a JSON array of topic objects, nothing else.
+Return ONLY:
+- either a pure JSON array: [ { ... }, { ... } ]
+- or an object that contains the array (for example: { "topics": [ ... ] } ).
+
+NO backticks, NO explanation, NO prose.
 `;
 
   let lastError = null;
@@ -171,7 +182,6 @@ Return ONLY a JSON array of topic objects, nothing else.
             { role: "user", content: userPrompt },
           ],
           temperature: 0.9,
-          response_format: { type: "json_object" }, // bazı modeller array'i "content"te string olarak verir
         }),
       });
 
@@ -189,21 +199,51 @@ Return ONLY a JSON array of topic objects, nothing else.
         throw new Error("Boş content döndü.");
       }
 
-      // Content bir array değilse, objenin içinde "topics" alanı olabilir, esnek olalım
+      content = content.trim();
+
+      // ```json ... ``` sarılıysa temizle
+      if (content.startsWith("```")) {
+        const first = content.indexOf("```");
+        const last = content.lastIndexOf("```");
+        if (last > first) {
+          content = content.slice(first + 3, last).trim();
+          content = content.replace(/^json/i, "").trim();
+        }
+      }
+
       let parsed;
       try {
         parsed = JSON.parse(content);
       } catch (e) {
-        throw new Error("JSON parse hatası: " + e.message);
+        // İçinde ekstra yazı varsa sadece ilk [ ... ] bloğunu çekmeyi dene
+        const start = content.indexOf("[");
+        const end = content.lastIndexOf("]");
+        if (start !== -1 && end !== -1 && end > start) {
+          const sub = content.slice(start, end + 1);
+          parsed = JSON.parse(sub);
+        } else {
+          throw new Error("JSON parse hatası: " + e.message);
+        }
       }
 
       let arr = [];
+
       if (Array.isArray(parsed)) {
         arr = parsed;
       } else if (Array.isArray(parsed.topics)) {
         arr = parsed.topics;
+      } else if (Array.isArray(parsed.data)) {
+        arr = parsed.data;
+      } else if (Array.isArray(parsed.results)) {
+        arr = parsed.results;
       } else {
-        throw new Error("Beklenmeyen JSON şekli, array bulamadım.");
+        // Son çare: obje içindeki ilk array değeri
+        const firstArray = Object.values(parsed).find((v) => Array.isArray(v));
+        if (Array.isArray(firstArray)) {
+          arr = firstArray;
+        } else {
+          throw new Error("Beklenmeyen JSON şekli, array bulamadım.");
+        }
       }
 
       // Güvenlik: şekli normalize et
