@@ -6,7 +6,9 @@
   "dev": "next dev",
   "build": "next build",
   "start": "next start",
-  "generate:pages": "node scripts/generate-pages.cjs"
+  "generate:pages": "node scripts/generate-pages.cjs",
+  "generate:topics": "node scripts/generate-topics.cjs"
+
 },
 
   "dependencies": {
