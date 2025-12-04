@@ -21,6 +21,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* AdSense domain doğrulama meta etiketi */}
+        <meta
+          name="google-adsense-account"
+          content="ca-pub-8097019883190912"
+        />
+
         {/* Google Analytics */}
         <Script
           async
@@ -36,6 +42,14 @@ export default function RootLayout({
             });
           `}
         </Script>
+
+        {/* Google AdSense (global) */}
+        <Script
+          id="adsbygoogle-init"
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8097019883190912"
+          crossOrigin="anonymous"
+        />
       </head>
 
       <body className={inter.className}>{children}</body>
