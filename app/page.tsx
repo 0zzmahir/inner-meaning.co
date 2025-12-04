@@ -8,7 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import SiteFooter from "@/components/site-footer";
 
-
 type PageItem = {
   slug: string;
   title: string;
@@ -24,6 +23,9 @@ const CATEGORY_LABELS: Record<string, string> = {
   dream: "Dreams",
   signs: "Signs",
 };
+
+// Anasayfada gösterilecek maksimum kart sayısı
+const MAX_ITEMS = 50;
 
 export default function HomePage() {
   const [search, setSearch] = useState("");
@@ -50,62 +52,65 @@ export default function HomePage() {
     });
   }, [pages, search, category]);
 
+  // Ekrana basılacak listeyi sınırla
+  const visiblePages = useMemo(
+    () => filteredPages.slice(0, MAX_ITEMS),
+    [filteredPages]
+  );
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-[#050509] via-[#05060b] to-[#101319] text-slate-50">
       {/* NAVBAR – glass / sabit */}
       <nav className="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3 text-sm">
-         {/* LOGO + TAGLINE */}
-{/* LOGO + TAGLINE (PREMIUM NEON VERSION) */}
-<Link href="/" className="group flex flex-col leading-tight select-none">
-  <span
-    className="
-      font-semibold 
-      tracking-[0.32em]
-      text-[1.35rem]
-      text-pink-300 
-      drop-shadow-[0_0_12px_rgba(255,100,180,0.55)]
-      group-hover:text-pink-200
-      transition
-      duration-200
-    "
-  >
-    INNER MEANING
-  </span>
+          {/* LOGO + TAGLINE (PREMIUM NEON VERSION) */}
+          <Link href="/" className="group flex flex-col leading-tight select-none">
+            <span
+              className="
+                font-semibold 
+                tracking-[0.32em]
+                text-[1.35rem]
+                text-pink-300 
+                drop-shadow-[0_0_12px_rgba(255,100,180,0.55)]
+                group-hover:text-pink-200
+                transition
+                duration-200
+              "
+            >
+              INNER MEANING
+            </span>
 
-  <span
-    className="
-      mt-1
-      text-[0.63rem]
-      uppercase 
-      tracking-[0.28em]
-      text-slate-400
-      group-hover:text-pink-300/80
-      transition
-    "
-  >
-    a calm meaning library
-  </span>
+            <span
+              className="
+                mt-1
+                text-[0.63rem]
+                uppercase 
+                tracking-[0.28em]
+                text-slate-400
+                group-hover:text-pink-300/80
+                transition
+              "
+            >
+              a calm meaning library
+            </span>
 
-  {/* PEMBE NEON ALT ÇİZGİ */}
-  <span
-    className="
-      mt-2
-      h-[2px]
-      w-14
-      rounded-full
-      bg-gradient-to-r from-pink-400 to-pink-200
-      opacity-60
-      group-hover:opacity-90
-      blur-[1px]
-      group-hover:blur-[2px]
-      transition-all 
-      duration-300
-    "
-  />
-</Link>
-
-
+            {/* PEMBE NEON ALT ÇİZGİ */}
+            <span
+              className="
+                mt-2
+                h-[2px]
+                w-14
+                rounded-full
+                bg-gradient-to-r from-pink-400 to-pink-200
+                opacity-60
+                group-hover:opacity-90
+                blur-[1px]
+                group-hover:blur-[2px]
+                transition-all 
+                duration-300
+              "
+            />
+          </Link>
 
           <div className="flex items-center gap-5 text-[0.8rem] text-slate-300">
             <Link href="/" className="hover:text-slate-50 transition">
@@ -117,12 +122,12 @@ export default function HomePage() {
             <Link href="/" className="hover:text-slate-50 transition">
               Library
             </Link>
-             <Link
-    href="/contact"
-    className="px-3 py-1.5 rounded-full hover:text-white hover:bg-slate-800/60 transition"
-  >
-    Contact
-  </Link>
+            <Link
+              href="/contact"
+              className="px-3 py-1.5 rounded-full hover:text-white hover:bg-slate-800/60 transition"
+            >
+              Contact
+            </Link>
           </div>
         </div>
       </nav>
@@ -189,14 +194,14 @@ export default function HomePage() {
           </div>
 
           <p className="text-[0.7rem] uppercase tracking-[0.18em] text-slate-400">
-            {filteredPages.length} RESULT
-            {filteredPages.length === 1 ? "" : "S"}
+            Showing {visiblePages.length} of {filteredPages.length} result
+            {filteredPages.length === 1 ? "" : "s"}
           </p>
         </section>
 
         {/* Kartlar – glass + hover büyüme */}
         <section className="grid gap-4 md:grid-cols-2">
-          {filteredPages.map((page) => (
+          {visiblePages.map((page) => (
             <Link key={page.slug} href={`/${page.slug}`}>
               <Card className="group cursor-pointer border border-slate-700/80 bg-slate-950/70 backdrop-blur-xl shadow-[0_18px_45px_rgba(0,0,0,0.85)] transition-transform duration-200 hover:-translate-y-[4px] hover:scale-[1.02] hover:border-pink-300/80 hover:shadow-[0_26px_70px_rgba(0,0,0,0.95)]">
                 <CardHeader className="pb-2">
