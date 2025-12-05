@@ -1,6 +1,6 @@
 // scripts/generate-topics.cjs
 // Inner Meaning için OTOMATİK TOPIC FABRİKASI
-// Tek komutla 5K topic'e kadar doldurur, duplicate slug'ları atlar.
+// Tek komutla 50K topic'e kadar doldurur, duplicate slug'ları atlar.
 
 require("dotenv").config();
 
@@ -9,12 +9,12 @@ const path = require("path");
 const fetch = global.fetch || require("node-fetch");
 
 // 🔧 AYARLAR
-const TARGET_TOPIC_COUNT = 6600; // Şimdilik 5K topic yeter
-const BATCH_SIZE = 50; // Her API çağrısında kaç topic istensin.
+const TARGET_TOPIC_COUNT = 6650; // Şimdilik 50K topic yeter
+const BATCH_SIZE = 100; // Her API çağrısında kaç topic istensin.
 const MAX_RETRIES = 3;
 
 // Topic için hızlı + ucuz model
-const MODEL = "deepseek/deepseek-chat";
+const MODEL = "deepseek/deepseek-r1-0528-qwen3-8b";
 const API_URL = "https://openrouter.ai/api/v1/chat/completions";
 const API_KEY = process.env.OPENROUTER_API_KEY;
 
