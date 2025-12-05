@@ -14,7 +14,7 @@ const BATCH_SIZE = 100; // Her API çağrısında kaç topic istensin.
 const MAX_RETRIES = 3;
 
 // Topic için hızlı + ucuz model
-const MODEL = "deepseek/deepseek-r1-0528-qwen3-8b";
+const MODEL = "google/gemini-2.0-flash-exp:free";
 const API_URL = "https://openrouter.ai/api/v1/chat/completions";
 const API_KEY = process.env.OPENROUTER_API_KEY;
 
