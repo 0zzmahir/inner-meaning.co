@@ -9,7 +9,7 @@ const path = require("path");
 const fetch = global.fetch || require("node-fetch");
 
 // 🔧 AYARLAR
-const TARGET_TOPIC_COUNT = 6650; // Şimdilik 50K topic yeter
+const TARGET_TOPIC_COUNT = 8000; // Şimdilik 50K topic yeter
 const BATCH_SIZE = 100; // Her API çağrısında kaç topic istensin.
 const MAX_RETRIES = 3;
 
