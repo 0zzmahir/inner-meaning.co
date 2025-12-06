@@ -1,8 +1,8 @@
 import fs from "fs";
 
 // 1) Dosya adı – sen hangisini kullanıyorsan ona göre değiştir
-const INPUT_FILE = "./data/topics.json";          // orijinal
-const OUTPUT_FILE = "./data/topics.slug-fixed.json"; // yeni çıkacak dosya
+const INPUT_FILE = "./data/pages.generated.json";          // orijinal
+const OUTPUT_FILE = "./data/pages.generated.fixed.json"; // yeni çıkacak dosya
 
 function slugifyFromTitle(title) {
   return title

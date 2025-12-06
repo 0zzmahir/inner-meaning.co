@@ -9,8 +9,8 @@ const path = require("path");
 const fetch = global.fetch || require("node-fetch");
 
 // 🔧 AYARLAR
-const TARGET_TOPIC_COUNT = 10010; // Şimdilik 50K topic yeter
-const BATCH_SIZE = 100; // Her API çağrısında kaç topic istensin.
+const TARGET_TOPIC_COUNT = 10010; // Şimdilik 10K topic yeter
+const BATCH_SIZE = 100; // Her API çağrısında kaç topic istensin
 const MAX_RETRIES = 3;
 
 // Topic için hızlı + ucuz model
@@ -38,32 +38,44 @@ function readJsonSafe(filepath, defaultValue) {
   }
 }
 
-// Slug normalize (kebab-case)
-function toSlug(str) {
+// Slug → her zaman TITLE'dan üret (modele güvenme)
+function slugifyFromTitle(str) {
   return String(str || "")
     .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .trim()
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-");
+    .replace(/['’]/g, "") // rubik’s -> rubiks
+    .replace(/[^a-z0-9]+/g, "-") // boşluk + diğer her şey -> -
+    .replace(/^-+|-+$/g, ""); // baş/son tireleri temizle
 }
 
 async function main() {
   let topics = readJsonSafe(topicsPath, []);
   if (!Array.isArray(topics)) topics = [];
 
+  // Mevcut slugs (normalize edilmiş)
   const existingSlugs = new Set(
     topics
-      .map((t) => t.slug)
+      .map((t) => slugifyFromTitle(t.slug || t.title))
       .filter(Boolean)
-      .map((s) => String(s).toLowerCase())
   );
+
+  // Mevcut topic’lerin slug’larını da normalize et (ileride karışmasın)
+  topics = topics.map((t) => {
+    const safeSlug = slugifyFromTitle(t.title || t.slug);
+    return {
+      slug: safeSlug,
+      title: t.title,
+      category: t.category,
+      focus: t.focus,
+    };
+  });
 
   console.log(`📚 Mevcut topic sayısı: ${topics.length}`);
   console.log(`🎯 Hedef topic sayısı: ${TARGET_TOPIC_COUNT}`);
 
   if (topics.length >= TARGET_TOPIC_COUNT) {
     console.log("✅ Zaten hedefe ulaşmışsın, yeni topic üretmeye gerek yok.");
+    // normalize edilmiş halleri tekrar yaz
+    fs.writeFileSync(topicsPath, JSON.stringify(topics, null, 2), "utf8");
     process.exit(0);
   }
 
@@ -83,19 +95,19 @@ async function main() {
       continue;
     }
 
-    // Yeni topic'leri listeye ekle
     let added = 0;
     for (const t of batch) {
-      const slug = toSlug(t.slug || t.title);
-      if (!slug || existingSlugs.has(slug)) continue;
+      const safeSlug = slugifyFromTitle(t.title);
+
+      if (!safeSlug || existingSlugs.has(safeSlug)) continue;
 
       topics.push({
-        slug,
+        slug: safeSlug,
         title: t.title,
         category: t.category,
         focus: t.focus,
       });
-      existingSlugs.add(slug);
+      existingSlugs.add(safeSlug);
       added++;
     }
 
@@ -215,7 +227,6 @@ NO backticks, NO explanation, NO prose.
       try {
         parsed = JSON.parse(content);
       } catch (e) {
-        // İçinde ekstra yazı varsa sadece ilk [ ... ] bloğunu çekmeyi dene
         const start = content.indexOf("[");
         const end = content.lastIndexOf("]");
         if (start !== -1 && end !== -1 && end > start) {
@@ -237,7 +248,6 @@ NO backticks, NO explanation, NO prose.
       } else if (Array.isArray(parsed.results)) {
         arr = parsed.results;
       } else {
-        // Son çare: obje içindeki ilk array değeri
         const firstArray = Object.values(parsed).find((v) => Array.isArray(v));
         if (Array.isArray(firstArray)) {
           arr = firstArray;
@@ -246,10 +256,9 @@ NO backticks, NO explanation, NO prose.
         }
       }
 
-      // Güvenlik: şekli normalize et
       const cleaned = arr
         .map((t) => ({
-          slug: toSlug(t.slug || t.title),
+          slug: slugifyFromTitle(t.title), // 🔥 slug HER ZAMAN title’dan
           title: String(t.title || "").trim(),
           category: String(t.category || "").trim(),
           focus: String(t.focus || "").trim(),
