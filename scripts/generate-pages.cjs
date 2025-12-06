@@ -3,15 +3,57 @@ require("dotenv").config();
 const fs = require("fs");
 const path = require("path");
 
-const API_KEY = process.env.OPENROUTER_API_KEY;
-if (!API_KEY) {
-  console.error("❌ OPENROUTER_API_KEY bulunamadı. .env dosyanı kontrol et.");
+// 🔑 Çoklu API key desteği (round-robin)
+const API_KEYS = [
+  process.env.OPENROUTER_API_KEY, // eski tek key'in varsa hâlâ çalışsın
+  process.env.OPENROUTER_KEY_1,
+  process.env.OPENROUTER_KEY_2,
+  process.env.OPENROUTER_KEY_3,
+  process.env.OPENROUTER_KEY_4,
+  process.env.OPENROUTER_KEY_5,
+].filter(Boolean);
+
+if (!API_KEYS.length) {
+  console.error(
+    "❌ Hiç OpenRouter API key bulunamadı. Lütfen .env içine OPENROUTER_KEY_1 veya OPENROUTER_API_KEY ekle."
+  );
   process.exit(1);
+}
+
+let apiIndex = 0;
+function getNextKey() {
+  const key = API_KEYS[apiIndex];
+  apiIndex = (apiIndex + 1) % API_KEYS.length;
+  return key;
+}
+
+// 🔁 Çoklu model desteği (round-robin)
+// İstediğin free / ucuz modelleri buraya ekleyebilirsin
+const MODELS = [
+  "amazon/nova-2-lite-v1:free",
+  "google/gemini-2.0-flash-exp:free",
+  "qwen/qwen3-coder:free",
+].filter(Boolean);
+
+if (!MODELS.length) {
+  console.error("❌ MODELS listesi boş. En az 1 model eklemen lazım.");
+  process.exit(1);
+}
+
+let modelIndex = 0;
+function getNextModel() {
+  const m = MODELS[modelIndex];
+  modelIndex = (modelIndex + 1) % MODELS.length;
+  return m;
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 // ↓↓↓ SLUG HER ZAMAN BURADAN ÜRETİLECEK ↓↓↓
 function slugifyFromTitle(title = "") {
-  return title
+  return String(title)
     .toLowerCase()
     .replace(/['’]/g, "") // rubik’s -> rubiks
     .replace(/[^a-z0-9]+/g, "-") // boşluk + diğer her şey -> -
@@ -19,7 +61,7 @@ function slugifyFromTitle(title = "") {
 }
 
 // Aynı anda kaç içerik üretilecek?
-const CONCURRENCY = 6;
+const CONCURRENCY = 5;
 
 // JSON yolları
 const topicsPath = path.join(__dirname, "..", "data", "topics.json");
@@ -36,12 +78,17 @@ const existingSlugs = new Set(existing.map((p) => p.slug));
 
 // Topic’lerin slug’ını garanti altına al (topic.slug yoksa title’dan üret)
 const normalizedTopics = allTopics.map((t) => {
-  const safeSlug = t.slug && t.slug.trim().length > 0 ? t.slug : slugifyFromTitle(t.title);
+  const safeSlug =
+    t.slug && String(t.slug).trim().length > 0
+      ? String(t.slug)
+      : slugifyFromTitle(t.title);
   return { ...t, slug: safeSlug };
 });
 
 // Üretilecek olanlar (daha önce yazılmamış slug'lar)
-const queue = normalizedTopics.filter((t) => t.slug && !existingSlugs.has(t.slug));
+const queue = normalizedTopics.filter(
+  (t) => t.slug && !existingSlugs.has(t.slug)
+);
 
 const systemPrompt = `
 You are a writer for a website called "Inner Meaning".
@@ -87,46 +134,109 @@ Generate the JSON now.
 
   console.log(`✨ Generating: ${safeSlug}`);
 
-  const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${API_KEY}`,
-      "HTTP-Referer": "https://inner-meaning.com",
-      "X-Title": "Inner Meaning Generator",
-    },
-    body: JSON.stringify({
-      // ❗ Buraya OpenRouter'dan kullandığın gerçek model ID'sini yaz:
-      model: "amazon/nova-2-lite-v1:free", // örn: "google/gemini-2.0-flash-exp:free" veya "amazon/...:free"
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt },
-      ],
-      temperature: 0.7,
-      response_format: { type: "json_object" },
-    }),
-  });
+  const MAX_RETRIES = 5;
+  let data;
+  let content;
 
-  if (!res.ok) {
-    const err = await res.text();
-    console.error(`❌ API error for ${safeSlug}:`, err);
-    throw new Error("API error");
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    const model = getNextModel();
+    const key = getNextKey();
+
+    console.log(
+      `📡 [${safeSlug}] attempt ${attempt}/${MAX_RETRIES} | model=${model}`
+    );
+
+    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${key}`,
+        "HTTP-Referer": "https://inner-meaning.com",
+        "X-Title": "Inner Meaning Generator",
+      },
+      body: JSON.stringify({
+        model,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt },
+        ],
+        temperature: 0.7,
+        response_format: { type: "json_object" },
+      }),
+    });
+
+    // Rate limit (429) → bekle & tekrar dene
+    if (res.status === 429) {
+      console.log(
+        `⏳ Rate limit for ${safeSlug} on ${model} (attempt ${attempt}/${MAX_RETRIES}) – bekliyorum...`
+      );
+      await sleep(3000 * attempt); // her denemede biraz daha uzun bekle
+      continue;
+    }
+
+    if (!res.ok) {
+      const err = await res.text();
+      console.error(`❌ API error for ${safeSlug} on ${model}:`, err);
+      // Model bazlı hata ise diğer denemede başka modele geçsin diye direkt throw etme, sadece loglayıp tekrar dene
+      if (attempt === MAX_RETRIES) {
+        throw new Error("API error (max retries reached)");
+      } else {
+        await sleep(1500 * attempt);
+        continue;
+      }
+    }
+
+    data = await res.json();
+    content = data.choices?.[0]?.message?.content;
+    break;
   }
-
-  const data = await res.json();
-  const content = data.choices?.[0]?.message?.content;
 
   if (!content) {
     console.error("❌ API response has no content for:", safeSlug, data);
     throw new Error("Empty content");
   }
 
+  // Bazı provider'lar content'i array/obj yapabiliyor, stringe zorla
+  if (Array.isArray(content)) {
+    content = content.map((c) => (typeof c === "string" ? c : "")).join(" ");
+  } else if (typeof content !== "string") {
+    content = String(content);
+  }
+
+  content = content.trim();
+
+  // ```json ... ``` içinde geldiyse strip et
+  if (content.startsWith("```")) {
+    const first = content.indexOf("```");
+    const last = content.lastIndexOf("```");
+    if (last > first) {
+      content = content.slice(first + 3, last).trim();
+      content = content.replace(/^json/i, "").trim();
+    }
+  }
+
   let parsed;
   try {
     parsed = JSON.parse(content);
   } catch (e) {
-    console.error("❌ JSON parse error. Raw content:", content);
-    throw e;
+    // İçinde ekstra yazı varsa sadece ilk { ... } bloğunu yakalamayı dene
+    const start = content.indexOf("{");
+    const end = content.lastIndexOf("}");
+    if (start !== -1 && end !== -1 && end > start) {
+      const sub = content.slice(start, end + 1);
+      try {
+        parsed = JSON.parse(sub);
+      } catch (e2) {
+        console.error(
+          "❌ JSON parse error (subslice). Raw content:\n",
+          content
+        );
+        throw e2;
+      }
+    } else {
+      console.error("❌ JSON parse error. Raw content:\n", content);
+      throw e;
+    }
   }
 
   // Son sayfa objesini KENDİMİZ kuruyoruz, slug HER ZAMAN safeSlug
@@ -175,7 +285,9 @@ async function main() {
   console.log(`\n📚 Toplam topic: ${allTopics.length}`);
   console.log(`✅ Zaten üretilen: ${existing.length}`);
   console.log(`🚀 Üretilecek yeni: ${queue.length}`);
-  console.log(`⚙️ Paralel worker sayısı: ${CONCURRENCY}\n`);
+  console.log(`⚙️ Paralel worker sayısı: ${CONCURRENCY}`);
+  console.log(`🔑 Aktif API key sayısı: ${API_KEYS.length}`);
+  console.log(`🤖 Aktif model sayısı: ${MODELS.length}\n`);
 
   if (queue.length === 0) {
     console.log("👌 Üretilecek yeni topic yok. Çıkılıyor.");
