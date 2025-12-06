@@ -16,34 +16,47 @@ type PageItem = {
   meaning?: string;
 };
 
-const CATEGORY_LABELS: Record<string, string> = {
-  all: "All",
-  spiritual: "Spiritual",
-  psychology: "Psychology",
-  dream: "Dreams",
-  signs: "Signs",
-};
-
 // Anasayfada gösterilecek maksimum kart sayısı
-const MAX_ITEMS = 50;
+const MAX_ITEMS = 25;
+
+// Basit shuffle (her sayfa yüklemesinde rastgele karışım)
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 
 export default function HomePage() {
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState<keyof typeof CATEGORY_LABELS>("all");
+  const [category, setCategory] = useState<string>("all");
 
   const pages = (pagesData as PageItem[]) || [];
 
-  const availableCategories = useMemo(() => {
-    const set = new Set<string>();
-    pages.forEach((p) => p.category && set.add(p.category.toLowerCase()));
-    return Array.from(set);
+  // Kategorileri ve sayımlarını çıkar
+  const categoryStats = useMemo(() => {
+    const counts = new Map<string, number>();
+    pages.forEach((p) => {
+      if (!p.category) return;
+      counts.set(p.category, (counts.get(p.category) ?? 0) + 1);
+    });
+
+    return Array.from(counts.entries())
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count);
   }, [pages]);
 
   const filteredPages = useMemo(() => {
     const q = search.trim().toLowerCase();
+
     return pages.filter((p) => {
-      const cat = (p.category || "").toLowerCase();
+      const cat = p.category || "";
+
+      // kategori filtresi
       if (category !== "all" && cat !== category) return false;
+
       if (!q) return true;
 
       const haystack =
@@ -52,18 +65,20 @@ export default function HomePage() {
     });
   }, [pages, search, category]);
 
-  // Ekrana basılacak listeyi sınırla
-  const visiblePages = useMemo(
-    () => filteredPages.slice(0, MAX_ITEMS),
-    [filteredPages]
-  );
+  // Ekrana basılacak liste:
+  // - Arama yoksa → rastgele karışım, ilk 50
+  // - Arama varsa → normal sıralı, ilk 50
+  const visiblePages = useMemo(() => {
+    const base = search ? filteredPages : shuffle(filteredPages);
+    return base.slice(0, MAX_ITEMS);
+  }, [filteredPages, search]);
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-[#050509] via-[#05060b] to-[#101319] text-slate-50">
       {/* NAVBAR – glass / sabit */}
       <nav className="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3 text-sm">
-          {/* LOGO + TAGLINE (PREMIUM NEON VERSION) */}
+          {/* LOGO + TAGLINE */}
           <Link href="/" className="group flex flex-col leading-tight select-none">
             <span
               className="
@@ -94,7 +109,6 @@ export default function HomePage() {
               a calm meaning library
             </span>
 
-            {/* PEMBE NEON ALT ÇİZGİ */}
             <span
               className="
                 mt-2
@@ -119,7 +133,7 @@ export default function HomePage() {
             <Link href="/about" className="hover:text-slate-50 transition">
               About
             </Link>
-            <Link href="/" className="hover:text-slate-50 transition">
+            <Link href="/library" className="hover:text-slate-50 transition">
               Library
             </Link>
             <Link
@@ -133,7 +147,7 @@ export default function HomePage() {
       </nav>
 
       <div className="relative mx-auto max-w-5xl px-4 pb-12 pt-8">
-        {/* Arka plan: gümüş / pembe glow */}
+        {/* Arka plan glow */}
         <div className="pointer-events-none fixed inset-0 -z-10">
           <div className="absolute -top-32 left-1/4 h-72 w-72 rounded-full bg-pink-400/18 blur-3xl" />
           <div className="absolute top-1/2 -left-20 h-80 w-80 rounded-full bg-slate-400/10 blur-3xl" />
@@ -158,70 +172,126 @@ export default function HomePage() {
 
           <div className="flex gap-3 text-xs text-slate-200">
             <InfoPill label="Entries" value={pages.length} />
-            <InfoPill label="Categories" value={availableCategories.length} />
+            <InfoPill label="Categories" value={categoryStats.length} />
           </div>
         </header>
 
-        {/* Arama + filtre */}
-        <section className="mb-5 space-y-4">
-          <div className="flex flex-col gap-3 md:flex-row md:items-center">
-            <Input
-              placeholder="Search feelings, dreams, signs (e.g. 3AM, 11:11, teeth, empty)…"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="bg-slate-950/60 border border-slate-700/80 placeholder:text-slate-500 text-sm shadow-[0_14px_40px_rgba(0,0,0,0.6)]"
-            />
-          </div>
-
-          <div className="flex flex-wrap gap-2 text-[0.75rem]">
-            <FilterChip
-              label="All"
-              active={category === "all"}
-              onClick={() => setCategory("all")}
-            />
-            {["spiritual", "psychology", "dream", "signs"].map((key) => {
-              if (!availableCategories.includes(key)) return null;
-              const k = key as keyof typeof CATEGORY_LABELS;
-              return (
-                <FilterChip
-                  key={k}
-                  label={CATEGORY_LABELS[k]}
-                  active={category === k}
-                  onClick={() => setCategory(k)}
+        {/* Ana layout: sol ana akış, sağda widget */}
+        <div className="flex flex-col gap-6 md:flex-row">
+          {/* Sol: arama + kartlar */}
+          <div className="flex-1">
+            {/* Arama + filtre */}
+            <section className="mb-5 space-y-4">
+              <div className="flex flex-col gap-3 md:flex-row md:items-center">
+                <Input
+                  placeholder="Search feelings, dreams, signs (e.g. 3AM, 11:11, teeth, empty)…"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="bg-slate-950/60 border border-slate-700/80 placeholder:text-slate-500 text-sm shadow-[0_14px_40px_rgba(0,0,0,0.6)]"
                 />
-              );
-            })}
+              </div>
+
+              <div className="flex flex-wrap gap-2 text-[0.75rem]">
+                <FilterChip
+                  label="All"
+                  active={category === "all"}
+                  onClick={() => setCategory("all")}
+                />
+                {categoryStats.slice(0, 10).map((cat) => (
+                  <FilterChip
+                    key={cat.name}
+                    label={cat.name}
+                    active={category === cat.name}
+                    onClick={() => setCategory(cat.name)}
+                  />
+                ))}
+              </div>
+
+              <p className="text-[0.7rem] uppercase tracking-[0.18em] text-slate-400">
+                Showing {visiblePages.length} of {filteredPages.length} result
+                {filteredPages.length === 1 ? "" : "s"}
+              </p>
+            </section>
+
+            {/* Kartlar */}
+            <section className="grid gap-4 md:grid-cols-2">
+              {visiblePages.map((page) => (
+                <Link key={page.slug} href={`/${page.slug}`}>
+                  <Card className="group cursor-pointer border border-slate-700/80 bg-slate-950/70 backdrop-blur-xl shadow-[0_18px_45px_rgba(0,0,0,0.85)] transition-transform duration-200 hover:-translate-y-[4px] hover:scale-[1.02] hover:border-pink-300/80 hover:shadow-[0_26px_70px_rgba(0,0,0,0.95)]">
+                    <CardHeader className="pb-2">
+                      <Badge className="mb-2 border-none bg-slate-800/80 text-[0.6rem] tracking-[0.18em] uppercase text-slate-300">
+                        {(page.category || "").replace(/-/g, " ")}
+                      </Badge>
+                      <CardTitle className="line-clamp-2 text-sm font-semibold text-slate-50 group-hover:text-pink-100">
+                        {page.title}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="line-clamp-3 text-[0.8rem] text-slate-300 group-hover:text-slate-100/90">
+                        {page.intro || page.meaning}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </section>
           </div>
 
-          <p className="text-[0.7rem] uppercase tracking-[0.18em] text-slate-400">
-            Showing {visiblePages.length} of {filteredPages.length} result
-            {filteredPages.length === 1 ? "" : "s"}
-          </p>
-        </section>
+          {/* Sağ: kategori widget */}
+          <aside className="md:w-64 shrink-0 space-y-4">
+            <Card className="border border-slate-700/80 bg-slate-950/80 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.9)]">
+              <CardHeader className="pb-2">
+                <p className="text-[0.65rem] uppercase tracking-[0.24em] text-slate-400">
+                  BROWSE BY CATEGORY
+                </p>
+                <h2 className="mt-1 text-sm font-semibold text-slate-50">
+                  Tune into a specific pattern.
+                </h2>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <button
+                  onClick={() => setCategory("all")}
+                  className={`flex w-full items-center justify-between rounded-full px-3 py-1.5 text-xs transition ${
+                    category === "all"
+                      ? "bg-pink-500/20 text-pink-100 border border-pink-400/70 shadow-[0_0_25px_rgba(244,114,182,0.45)]"
+                      : "bg-slate-900/70 text-slate-200 border border-slate-700/80 hover:border-pink-400/70 hover:text-pink-100"
+                  }`}
+                >
+                  <span>All entries</span>
+                  <span className="text-[0.7rem] opacity-80">
+                    {pages.length}
+                  </span>
+                </button>
 
-        {/* Kartlar – glass + hover büyüme */}
-        <section className="grid gap-4 md:grid-cols-2">
-          {visiblePages.map((page) => (
-            <Link key={page.slug} href={`/${page.slug}`}>
-              <Card className="group cursor-pointer border border-slate-700/80 bg-slate-950/70 backdrop-blur-xl shadow-[0_18px_45px_rgba(0,0,0,0.85)] transition-transform duration-200 hover:-translate-y-[4px] hover:scale-[1.02] hover:border-pink-300/80 hover:shadow-[0_26px_70px_rgba(0,0,0,0.95)]">
-                <CardHeader className="pb-2">
-                  <Badge className="mb-2 border-none bg-slate-800/80 text-[0.6rem] tracking-[0.18em] uppercase text-slate-300">
-                    {(page.category || "").replace(/-/g, " ")}
-                  </Badge>
-                  <CardTitle className="line-clamp-2 text-sm font-semibold text-slate-50 group-hover:text-pink-100">
-                    {page.title}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="line-clamp-3 text-[0.8rem] text-slate-300 group-hover:text-slate-100/90">
-                    {page.intro || page.meaning}
-                  </p>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
-        </section>
+                {categoryStats.slice(0, 10).map((cat) => (
+                  <button
+                    key={cat.name}
+                    onClick={() => setCategory(cat.name)}
+                    className={`flex w-full items-center justify-between rounded-full px-3 py-1.5 text-xs transition ${
+                      category === cat.name
+                        ? "bg-pink-500/20 text-pink-100 border border-pink-400/70 shadow-[0_0_25px_rgba(244,114,182,0.45)]"
+                        : "bg-slate-900/70 text-slate-200 border border-slate-700/80 hover:border-pink-400/70 hover:text-pink-100"
+                    }`}
+                  >
+                    <span className="truncate">{cat.name}</span>
+                    <span className="text-[0.7rem] opacity-80">
+                      {cat.count}
+                    </span>
+                  </button>
+                ))}
+
+                <Link
+                  href="/library"
+                  className="mt-3 block text-[0.7rem] text-slate-400 hover:text-pink-200 transition"
+                >
+                  Open full library →
+                </Link>
+              </CardContent>
+            </Card>
+          </aside>
+        </div>
       </div>
+
       <SiteFooter />
     </main>
   );
