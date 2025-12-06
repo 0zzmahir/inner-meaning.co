@@ -9,12 +9,12 @@ const path = require("path");
 const fetch = global.fetch || require("node-fetch");
 
 // 🔧 AYARLAR
-const TARGET_TOPIC_COUNT = 8000; // Şimdilik 50K topic yeter
+const TARGET_TOPIC_COUNT = 10000; // Şimdilik 50K topic yeter
 const BATCH_SIZE = 100; // Her API çağrısında kaç topic istensin.
 const MAX_RETRIES = 3;
 
 // Topic için hızlı + ucuz model
-const MODEL = "google/gemini-2.0-flash-exp:free";
+const MODEL = "amazon/nova-2-lite-v1:free";
 const API_URL = "https://openrouter.ai/api/v1/chat/completions";
 const API_KEY = process.env.OPENROUTER_API_KEY;
 
