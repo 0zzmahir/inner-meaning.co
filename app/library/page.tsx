@@ -1,5 +1,3 @@
-"use client";
-
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
@@ -14,11 +12,9 @@ export default function LibraryPage() {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-[#050509] via-[#05060b] to-[#101319] text-slate-50">
-
       {/* NAVBAR (Aynı Logo + Menü) */}
       <nav className="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3 text-sm">
-
           {/* LOGO */}
           <Link href="/" className="group flex flex-col leading-tight select-none">
             <span className="font-semibold tracking-[0.32em] text-[1.35rem] text-pink-300 drop-shadow-[0_0_12px_rgba(255,100,180,0.55)] group-hover:text-pink-200 transition duration-200">
@@ -31,10 +27,21 @@ export default function LibraryPage() {
           </Link>
 
           <div className="flex items-center gap-6 text-[1rem] text-slate-200">
-            <Link href="/" className="px-3 py-1.5 rounded-full hover:bg-slate-800/60 transition">Home</Link>
-            <Link href="/about" className="px-3 py-1.5 rounded-full hover:bg-slate-800/60 transition">About</Link>
-            <Link href="/library" className="px-3 py-1.5 rounded-full bg-pink-400/20 border border-pink-400/50 text-pink-100">Library</Link>
-            <Link href="/contact" className="px-3 py-1.5 rounded-full hover:bg-slate-800/60 transition">Contact</Link>
+            <Link href="/" className="px-3 py-1.5 rounded-full hover:bg-slate-800/60 transition">
+              Home
+            </Link>
+            <Link href="/about" className="px-3 py-1.5 rounded-full hover:bg-slate-800/60 transition">
+              About
+            </Link>
+            <Link
+              href="/library"
+              className="px-3 py-1.5 rounded-full bg-pink-400/20 border border-pink-400/50 text-pink-100"
+            >
+              Library
+            </Link>
+            <Link href="/contact" className="px-3 py-1.5 rounded-full hover:bg-slate-800/60 transition">
+              Contact
+            </Link>
           </div>
         </div>
       </nav>
@@ -45,7 +52,7 @@ export default function LibraryPage() {
         <div className="absolute right-0 bottom-0 h-96 w-96 rounded-full bg-slate-400/16 blur-3xl" />
       </div>
 
-      {/* BAŞLIK */}
+      {/* BAŞLIK + LİSTE */}
       <div className="mx-auto max-w-5xl px-4 py-8 md:py-12">
         <h1 className="text-3xl font-semibold text-slate-50 mb-3">Library</h1>
         <p className="text-slate-300 text-sm mb-8">
