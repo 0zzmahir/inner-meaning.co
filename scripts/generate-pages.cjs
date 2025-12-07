@@ -30,9 +30,10 @@ function getNextKey() {
 // 🔁 Çoklu model desteği (round-robin)
 // İstediğin free / ucuz modelleri buraya ekleyebilirsin
 const MODELS = [
-  "amazon/nova-2-lite-v1:free",
-  "google/gemini-2.0-flash-exp:free",
-  "qwen/qwen3-coder:free",
+  //"amazon/nova-2-lite-v1:free",
+  //"google/gemini-2.0-flash-exp:free",
+  //"qwen/qwen3-coder:free",
+  "deepseek/deepseek-r1-0528-qwen3-8b",
 ].filter(Boolean);
 
 if (!MODELS.length) {
