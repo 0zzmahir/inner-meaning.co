@@ -1,6 +1,6 @@
 // scripts/generate-topics.cjs
 // Inner Meaning için OTOMATİK TOPIC FABRİKASI
-// Tek komutla 50K topic'e kadar doldurur, duplicate slug'ları atlar.
+// Tek komutla 11K topic'e kadar doldurur, duplicate slug'ları atlar.
 
 require("dotenv").config();
 
@@ -9,12 +9,12 @@ const path = require("path");
 const fetch = global.fetch || require("node-fetch");
 
 // 🔧 AYARLAR
-const TARGET_TOPIC_COUNT = 11000; // Şimdilik 50K topic yeter
-const BATCH_SIZE = 100; // Her API çağrısında kaç topic istensin
+const TARGET_TOPIC_COUNT = 11050; // Şimdilik 11K
+const BATCH_SIZE = 100;           // Her API çağrısında kaç topic istensin
 const MAX_RETRIES = 3;
 
 // Topic için hızlı + ucuz model
-const MODEL = "amazon/nova-2-lite-v1:free";
+const MODEL = "amazon/nova-2-lite-v1:free"; // TEK bir model ID olmalı
 const API_URL = "https://openrouter.ai/api/v1/chat/completions";
 const API_KEY = process.env.OPENROUTER_API_KEY;
 
@@ -42,11 +42,12 @@ function readJsonSafe(filepath, defaultValue) {
 function slugifyFromTitle(str) {
   return String(str || "")
     .toLowerCase()
-    .replace(/['’]/g, "") // rubik’s -> rubiks
-    .replace(/[^a-z0-9]+/g, "-") // boşluk + diğer her şey -> -
-    .replace(/^-+|-+$/g, ""); // baş/son tireleri temizle
+    .replace(/['’]/g, "")          // rubik’s -> rubiks
+    .replace(/[^a-z0-9]+/g, "-")   // boşluk + diğer her şey -> -
+    .replace(/^-+|-+$/g, "");      // baş/son tireleri temizle
 }
 
+// 🔹 ANA FONKSİYON
 async function main() {
   let topics = readJsonSafe(topicsPath, []);
   if (!Array.isArray(topics)) topics = [];
@@ -58,7 +59,7 @@ async function main() {
       .filter(Boolean)
   );
 
-  // Mevcut topic’lerin slug’larını da normalize et (ileride karışmasın)
+  // Mevcut topic’lerin slug’larını normalize et
   topics = topics.map((t) => {
     const safeSlug = slugifyFromTitle(t.title || t.slug);
     return {
@@ -74,7 +75,6 @@ async function main() {
 
   if (topics.length >= TARGET_TOPIC_COUNT) {
     console.log("✅ Zaten hedefe ulaşmışsın, yeni topic üretmeye gerek yok.");
-    // normalize edilmiş halleri tekrar yaz
     fs.writeFileSync(topicsPath, JSON.stringify(topics, null, 2), "utf8");
     process.exit(0);
   }
@@ -258,7 +258,7 @@ NO backticks, NO explanation, NO prose.
 
       const cleaned = arr
         .map((t) => ({
-          slug: slugifyFromTitle(t.title), // 🔥 slug HER ZAMAN title’dan
+          slug: slugifyFromTitle(t.title), // slug HER ZAMAN title’dan
           title: String(t.title || "").trim(),
           category: String(t.category || "").trim(),
           focus: String(t.focus || "").trim(),
@@ -283,6 +283,7 @@ NO backticks, NO explanation, NO prose.
   return [];
 }
 
+// Script giriş noktası
 main().catch((e) => {
   console.error("Beklenmeyen hata:", e);
   process.exit(1);

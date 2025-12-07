@@ -2,6 +2,7 @@
 require("dotenv").config();
 const fs = require("fs");
 const path = require("path");
+const fetch = global.fetch || require("node-fetch"); // 🔥 Node'ta fetch yoksa garanti et
 
 // 🔑 Çoklu API key desteği (round-robin)
 const API_KEYS = [
@@ -28,12 +29,13 @@ function getNextKey() {
 }
 
 // 🔁 Çoklu model desteği (round-robin)
-// İstediğin free / ucuz modelleri buraya ekleyebilirsin
+// Not: DeepSeek modeli daha önce hatalı ID nedeniyle 400 döndürmüştü.
+// Bu yüzden en az bir stabil free model aktif tutmak mantıklı.
 const MODELS = [
-  //"amazon/nova-2-lite-v1:free",
-  //"google/gemini-2.0-flash-exp:free",
-  //"qwen/qwen3-coder:free",
-  "deepseek/deepseek-r1-0528-qwen3-8b",
+  "amazon/nova-2-lite-v1:free",
+  // "google/gemini-2.0-flash-exp:free",
+  // "qwen/qwen3-coder:free",
+  // "deepseek/deepseek-r1-0528-qwen3-8b", // emin olduğunda tekrar açarsın
 ].filter(Boolean);
 
 if (!MODELS.length) {
@@ -68,11 +70,22 @@ const CONCURRENCY = 5;
 const topicsPath = path.join(__dirname, "..", "data", "topics.json");
 const pagesPath = path.join(__dirname, "..", "data", "pages.generated.json");
 
+// Güvenli JSON okuma (topics/pages bozulursa script komple çakılmasın)
+function readJsonSafe(filepath, defaultValue) {
+  if (!fs.existsSync(filepath)) return defaultValue;
+  try {
+    const raw = fs.readFileSync(filepath, "utf8");
+    if (!raw.trim()) return defaultValue;
+    return JSON.parse(raw);
+  } catch (e) {
+    console.error("⚠ JSON okuma hatası:", filepath, e.message);
+    return defaultValue;
+  }
+}
+
 // topics & mevcut sayfalar
-const allTopics = JSON.parse(fs.readFileSync(topicsPath, "utf8"));
-const existing = fs.existsSync(pagesPath)
-  ? JSON.parse(fs.readFileSync(pagesPath, "utf8"))
-  : [];
+const allTopics = readJsonSafe(topicsPath, []);
+const existing = readJsonSafe(pagesPath, []);
 
 // Mevcut slug seti (sayfalardan)
 const existingSlugs = new Set(existing.map((p) => p.slug));
@@ -264,7 +277,7 @@ Generate the JSON now.
   existing.push(finalPage);
   existingSlugs.add(finalPage.slug);
 
-  fs.writeFileSync(pagesPath, JSON.stringify(existing, null, 2));
+  fs.writeFileSync(pagesPath, JSON.stringify(existing, null, 2), "utf8");
   console.log(`✅ Saved: ${finalPage.slug}`);
 }
 

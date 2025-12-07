@@ -1,13 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  compress: true, // ← GZIP + Brotli sıkıştırmayı açık ilan ettik
+  // Tüm siteyi statik export edeceğiz
+  output: 'export',
+  trailingSlash: true,
 
+  // 🔥 Build sırasında ESLint'i tamamen devre dışı bırak
   eslint: {
     ignoreDuringBuilds: true,
-  },
-
-  images: { 
-    unoptimized: true 
   },
 };
 

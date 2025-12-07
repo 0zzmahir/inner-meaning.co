@@ -3,14 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-  "dev": "next dev",
-  "build": "next build",
-  "start": "next start",
-  "generate:pages": "node scripts/generate-pages.cjs",
-  "generate:topics": "node scripts/generate-topics.cjs"
-
-},
-
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "generate": "node scripts/generate-topics.cjs && node scripts/generate-pages.cjs"
+  },
   "dependencies": {
     "@radix-ui/react-accordion": "latest",
     "@radix-ui/react-alert-dialog": "^1.1.15",

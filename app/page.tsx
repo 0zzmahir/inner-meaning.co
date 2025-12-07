@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import pagesData from "@/data/pages.generated.json";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -19,7 +20,7 @@ type PageItem = {
 // Anasayfada gösterilecek maksimum kart sayısı
 const MAX_ITEMS = 25;
 
-// Basit shuffle (her sayfa yüklemesinde rastgele karışım)
+// Basit shuffle fonksiyonu
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -35,9 +36,10 @@ export default function HomePage() {
 
   const pages = (pagesData as PageItem[]) || [];
 
-  // Kategorileri ve sayımlarını çıkar
+  // Kategoriler + sayılar
   const categoryStats = useMemo(() => {
     const counts = new Map<string, number>();
+
     pages.forEach((p) => {
       if (!p.category) return;
       counts.set(p.category, (counts.get(p.category) ?? 0) + 1);
@@ -48,26 +50,24 @@ export default function HomePage() {
       .sort((a, b) => b.count - a.count);
   }, [pages]);
 
+  // Filtreleme
   const filteredPages = useMemo(() => {
     const q = search.trim().toLowerCase();
 
     return pages.filter((p) => {
       const cat = p.category || "";
 
-      // kategori filtresi
       if (category !== "all" && cat !== category) return false;
-
       if (!q) return true;
 
       const haystack =
         (p.title || "") + " " + (p.intro || "") + " " + (p.meaning || "");
+
       return haystack.toLowerCase().includes(q);
     });
   }, [pages, search, category]);
 
-  // Ekrana basılacak liste:
-  // - Arama yoksa → rastgele karışım, ilk 50
-  // - Arama varsa → normal sıralı, ilk 50
+  // Görüntülenecek liste
   const visiblePages = useMemo(() => {
     const base = search ? filteredPages : shuffle(filteredPages);
     return base.slice(0, MAX_ITEMS);
@@ -75,67 +75,27 @@ export default function HomePage() {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-[#050509] via-[#05060b] to-[#101319] text-slate-50">
-      {/* NAVBAR – glass / sabit */}
+      {/* NAVBAR */}
       <nav className="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3 text-sm">
-          {/* LOGO + TAGLINE */}
+          {/* LOGO */}
           <Link href="/" className="group flex flex-col leading-tight select-none">
-            <span
-              className="
-                font-semibold 
-                tracking-[0.32em]
-                text-[1.35rem]
-                text-pink-300 
-                drop-shadow-[0_0_12px_rgba(255,100,180,0.55)]
-                group-hover:text-pink-200
-                transition
-                duration-200
-              "
-            >
+            <span className="font-semibold tracking-[0.32em] text-[1.35rem] text-pink-300 drop-shadow-[0_0_12px_rgba(255,100,180,0.55)] group-hover:text-pink-200 transition duration-200">
               INNER MEANING
             </span>
 
-            <span
-              className="
-                mt-1
-                text-[0.63rem]
-                uppercase 
-                tracking-[0.28em]
-                text-slate-400
-                group-hover:text-pink-300/80
-                transition
-              "
-            >
+            <span className="mt-1 text-[0.63rem] uppercase tracking-[0.28em] text-slate-400 group-hover:text-pink-300/80 transition">
               a calm meaning library
             </span>
 
-            <span
-              className="
-                mt-2
-                h-[2px]
-                w-14
-                rounded-full
-                bg-gradient-to-r from-pink-400 to-pink-200
-                opacity-60
-                group-hover:opacity-90
-                blur-[1px]
-                group-hover:blur-[2px]
-                transition-all 
-                duration-300
-              "
-            />
+            <span className="mt-2 h-[2px] w-14 rounded-full bg-gradient-to-r from-pink-400 to-pink-200 opacity-60 group-hover:opacity-90 blur-[1px] group-hover:blur-[2px] transition-all duration-300" />
           </Link>
 
           <div className="flex items-center gap-5 text-[0.8rem] text-slate-300">
-            <Link href="/" className="hover:text-slate-50 transition">
-              Home
-            </Link>
-            <Link href="/about" className="hover:text-slate-50 transition">
-              About
-            </Link>
-            <Link href="/library" className="hover:text-slate-50 transition">
-              Library
-            </Link>
+            <Link href="/" className="hover:text-slate-50 transition">Home</Link>
+            <Link href="/about" className="hover:text-slate-50 transition">About</Link>
+            <Link href="/library" className="hover:text-slate-50 transition">Library</Link>
+
             <Link
               href="/contact"
               className="px-3 py-1.5 rounded-full hover:text-white hover:bg-slate-800/60 transition"
@@ -147,26 +107,26 @@ export default function HomePage() {
       </nav>
 
       <div className="relative mx-auto max-w-5xl px-4 pb-12 pt-8">
-        {/* Arka plan glow */}
+        {/* Glow */}
         <div className="pointer-events-none fixed inset-0 -z-10">
           <div className="absolute -top-32 left-1/4 h-72 w-72 rounded-full bg-pink-400/18 blur-3xl" />
           <div className="absolute top-1/2 -left-20 h-80 w-80 rounded-full bg-slate-400/10 blur-3xl" />
           <div className="absolute bottom-[-80px] right-0 h-80 w-80 rounded-full bg-rose-300/16 blur-3xl" />
         </div>
 
-        {/* Üst blok */}
+        {/* ÜST BLOK */}
         <header className="mb-8 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="mb-2 text-[0.7rem] tracking-[0.24em] text-slate-400">
               MODERN MEANING ARCHIVE
             </p>
+
             <h1 className="text-3xl font-semibold tracking-tight text-slate-50">
               Understand the strange moments your mind keeps replaying.
             </h1>
+
             <p className="mt-3 max-w-xl text-sm text-slate-300">
-              A calm, glassy space that blends spiritual and psychological
-              explanations for dreams, signs and emotions that refuse to be
-              ignored.
+              A calm, glassy space that blends spiritual and psychological explanations for dreams, signs and emotions that refuse to be ignored.
             </p>
           </div>
 
@@ -176,11 +136,11 @@ export default function HomePage() {
           </div>
         </header>
 
-        {/* Ana layout: sol ana akış, sağda widget */}
+        {/* LAYOUT */}
         <div className="flex flex-col gap-6 md:flex-row">
-          {/* Sol: arama + kartlar */}
+          {/* SOL BLOK */}
           <div className="flex-1">
-            {/* Arama + filtre */}
+            {/* Arama */}
             <section className="mb-5 space-y-4">
               <div className="flex flex-col gap-3 md:flex-row md:items-center">
                 <Input
@@ -191,12 +151,14 @@ export default function HomePage() {
                 />
               </div>
 
+              {/* Filtre */}
               <div className="flex flex-wrap gap-2 text-[0.75rem]">
                 <FilterChip
                   label="All"
                   active={category === "all"}
                   onClick={() => setCategory("all")}
                 />
+
                 {categoryStats.slice(0, 10).map((cat) => (
                   <FilterChip
                     key={cat.name}
@@ -222,10 +184,12 @@ export default function HomePage() {
                       <Badge className="mb-2 border-none bg-slate-800/80 text-[0.6rem] tracking-[0.18em] uppercase text-slate-300">
                         {(page.category || "").replace(/-/g, " ")}
                       </Badge>
+
                       <CardTitle className="line-clamp-2 text-sm font-semibold text-slate-50 group-hover:text-pink-100">
                         {page.title}
                       </CardTitle>
                     </CardHeader>
+
                     <CardContent>
                       <p className="line-clamp-3 text-[0.8rem] text-slate-300 group-hover:text-slate-100/90">
                         {page.intro || page.meaning}
@@ -237,18 +201,21 @@ export default function HomePage() {
             </section>
           </div>
 
-          {/* Sağ: kategori widget */}
+          {/* SAĞ SİDEBAR */}
           <aside className="md:w-64 shrink-0 space-y-4">
             <Card className="border border-slate-700/80 bg-slate-950/80 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.9)]">
               <CardHeader className="pb-2">
                 <p className="text-[0.65rem] uppercase tracking-[0.24em] text-slate-400">
                   BROWSE BY CATEGORY
                 </p>
+
                 <h2 className="mt-1 text-sm font-semibold text-slate-50">
                   Tune into a specific pattern.
                 </h2>
               </CardHeader>
+
               <CardContent className="space-y-3">
+                {/* ALL BUTTON */}
                 <button
                   onClick={() => setCategory("all")}
                   className={`flex w-full items-center justify-between rounded-full px-3 py-1.5 text-xs transition ${
@@ -263,6 +230,7 @@ export default function HomePage() {
                   </span>
                 </button>
 
+                {/* CATEGORY BUTTONS */}
                 {categoryStats.slice(0, 10).map((cat) => (
                   <button
                     key={cat.name}
@@ -326,6 +294,7 @@ function InfoPill({ label, value }: { label: string; value: number }) {
       <p className="text-[0.6rem] uppercase tracking-[0.18em] text-slate-400">
         {label}
       </p>
+
       <p className="mt-1 text-sm font-semibold text-slate-50">
         {value.toString().padStart(2, "0")}
       </p>

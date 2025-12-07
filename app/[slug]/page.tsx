@@ -1,25 +1,41 @@
-// app/[slug]/page.tsx
+// Örnek: app/[slug]/page.tsx
+import topics from '@/data/topics.json';
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+// Dinamik davranışı kapat:
+export const dynamic = 'error';
+export const revalidate = false;
 
-import { notFound } from "next/navigation";
-import ContentPageClient from "./content-client";
-import pagesData from "@/data/pages.generated.json";
+// Next'e hangi slug'lar için sayfa üreteceğini söyle:
+export function generateStaticParams() {
+  return (topics as any[]).map((t) => ({ slug: t.slug }));
+}
 
-// JSON'u bir kere okuyup bellekte tutuyoruz
-const pages = pagesData as any[];
+export default function TopicPage({ params }: { params: { slug: string } }) {
+  const topic = (topics as any[]).find((t) => t.slug === params.slug);
 
-// Artık STATIC param üretmiyoruz, tamamen dinamik
-export default function ContentPage({ params }: { params: { slug: string } }) {
-  const slug = params.slug;
-
-  // Geçersiz slug gelirse 404 ver
-  const exists = pages.some((p) => p.slug === slug);
-  if (!exists) {
-    return notFound();
+  if (!topic) {
+    return <div>Not found</div>;
   }
 
-  // Asıl içerik client component'te
-  return <ContentPageClient slug={slug} />;
+  return (
+    <main>
+      <h1>{topic.title}</h1>
+      <article>
+        {/* İçeriği nasıl tutuyorsan ona göre doldur */}
+        <p>{topic.content}</p>
+      </article>
+    </main>
+  );
+}
+
+// SEO için:
+export function generateMetadata({ params }: { params: { slug: string } }) {
+  const topic = (topics as any[]).find((t) => t.slug === params.slug);
+
+  if (!topic) return { title: 'Not found' };
+
+  return {
+    title: topic.title + ' | Inner Meaning',
+    description: topic.metaDescription || topic.content?.slice(0, 150),
+  };
 }
