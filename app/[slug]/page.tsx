@@ -18,25 +18,85 @@ type FaqItem = {
   a: string;
 };
 
+type PageContentRaw = {
+  slug?: string;
+  title?: any;
+  category?: any;
+  intro?: any;
+  meaning?: any;
+  spiritual?: any;
+  psychological?: any;
+  possibleCauses?: any;
+  advice?: any;
+  faq?: any;
+};
+
 type PageContent = {
   slug: string;
-  title?: string;
+  title: string;
   category?: string;
-  intro?: string;
-  meaning?: string;
-  spiritual?: string;
-  psychological?: string;
-  possibleCauses?: string[];
-  advice?: string;
-  faq?: FaqItem[];
+  intro: string;
+  meaning: string;
+  spiritual: string;
+  psychological: string;
+  possibleCauses: string[];
+  advice: string;
+  faq: FaqItem[];
 };
 
 const topics = (rawTopics as Topic[]) || [];
-const pages = (rawPages as PageContent[]) || [];
+const pagesRaw = (rawPages as PageContentRaw[]) || [];
+
+// Bozuk JSON gelse bile burada normalize ediyoruz
+function normalizePage(raw: PageContentRaw | undefined): PageContent | null {
+  if (!raw || !raw.slug) return null;
+
+  const intro =
+    typeof raw.intro === "string" ? raw.intro : "";
+  const meaning =
+    typeof raw.meaning === "string" ? raw.meaning : "";
+  const spiritual =
+    typeof raw.spiritual === "string" ? raw.spiritual : "";
+  const psychological =
+    typeof raw.psychological === "string" ? raw.psychological : "";
+  const advice =
+    typeof raw.advice === "string" ? raw.advice : "";
+
+  const possibleCauses = Array.isArray(raw.possibleCauses)
+    ? raw.possibleCauses
+        .filter((x) => typeof x === "string")
+        .map((x) => x as string)
+    : [];
+
+  const faq: FaqItem[] = Array.isArray(raw.faq)
+    ? raw.faq
+        .map((item: any) => {
+          const q = typeof item?.q === "string" ? item.q : "";
+          const a = typeof item?.a === "string" ? item.a : "";
+          return { q, a };
+        })
+        .filter((i) => i.q || i.a)
+    : [];
+
+  return {
+    slug: String(raw.slug),
+    title: typeof raw.title === "string" ? raw.title : "",
+    category:
+      typeof raw.category === "string" ? raw.category : undefined,
+    intro,
+    meaning,
+    spiritual,
+    psychological,
+    possibleCauses,
+    advice,
+    faq,
+  };
+}
 
 const pageBySlug = new Map<string, PageContent>();
-for (const p of pages) {
-  if (p.slug) pageBySlug.set(p.slug, p);
+for (const p of pagesRaw) {
+  const normalized = normalizePage(p);
+  if (normalized) pageBySlug.set(normalized.slug, normalized);
 }
 
 export const dynamic = "error";
@@ -50,7 +110,7 @@ function getCombined(slug: string) {
   const topic = topics.find((t) => t.slug === slug);
   if (!topic) return null;
 
-  const page = pageBySlug.get(slug);
+  const page = pageBySlug.get(slug) || null;
 
   const title = (page?.title || topic.title || "").trim();
   const category = (page?.category || topic.category || "").trim() || undefined;
@@ -59,7 +119,7 @@ function getCombined(slug: string) {
     topic.metaDescription ||
     topic.focus ||
     page?.intro ||
-    page?.meaning?.slice(0, 160) ||
+    (page?.meaning ? page.meaning.slice(0, 160) : "") ||
     "";
 
   return { slug, topic, page, title, category, description };
@@ -220,10 +280,16 @@ export default function TopicPage({ params }: { params: { slug: string } }) {
                       key={idx}
                       className="rounded-2xl border border-slate-800/80 bg-slate-900/70 p-4"
                     >
-                      <h3 className="text-sm font-medium text-slate-100">
-                        {item.q}
-                      </h3>
-                      <p className="mt-1 text-sm text-slate-300">{item.a}</p>
+                      {item.q && (
+                        <h3 className="text-sm font-medium text-slate-100">
+                          {item.q}
+                        </h3>
+                      )}
+                      {item.a && (
+                        <p className="mt-1 text-sm text-slate-300">
+                          {item.a}
+                        </p>
+                      )}
                     </div>
                   ))}
                 </div>
