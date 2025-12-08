@@ -1,303 +1,230 @@
-"use client";
-
-import { useMemo, useState } from "react";
 import Link from "next/link";
-import pagesData from "@/data/pages.generated.json";
+import topicsRaw from "@/data/topics.json";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import SiteFooter from "@/components/site-footer";
-
-type PageItem = {
+type Topic = {
   slug: string;
   title: string;
   category?: string;
-  intro?: string;
-  meaning?: string;
+  focus?: string;
 };
 
-// Anasayfada gösterilecek maksimum kart sayısı
-const MAX_ITEMS = 25;
+const topics = (topicsRaw as Topic[]) || [];
 
-// Basit shuffle fonksiyonu
-function shuffle<T>(arr: T[]): T[] {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
+const CATEGORIES = [
+  {
+    key: "Spiritual Signs",
+    label: "Spiritual Signs",
+    description: "Repeating numbers, symbols, synchronicities, subtle nudges.",
+    accent: "from-cyan-400/80 via-sky-500/70 to-emerald-400/80",
+  },
+  {
+    key: "Dream Meanings",
+    label: "Dream Meanings",
+    description: "Recurring dreams, vivid symbols, strange characters at night.",
+    accent: "from-fuchsia-400/80 via-pink-500/70 to-rose-400/80",
+  },
+  {
+    key: "Strange Events",
+    label: "Strange Events",
+    description: "Déjà vu, glitches in reality, uncanny coincidences.",
+    accent: "from-indigo-400/80 via-violet-500/70 to-sky-400/80",
+  },
+  {
+    key: "Emotional Signals",
+    label: "Emotional Signals",
+    description: "Sudden sadness, emptiness, heavy moods without clear reasons.",
+    accent: "from-amber-400/80 via-orange-500/70 to-rose-400/80",
+  },
+  {
+    key: "Mind Patterns",
+    label: "Mind Patterns",
+    description: "Overthinking loops, repeating relationship patterns, mental noise.",
+    accent: "from-lime-400/80 via-emerald-500/70 to-cyan-400/80",
+  },
+];
+
+const featuredTopics: Topic[] = topics.slice(0, 8);
 
 export default function HomePage() {
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState<string>("all");
-
-  const pages = (pagesData as PageItem[]) || [];
-
-  // Kategoriler + sayılar
-  const categoryStats = useMemo(() => {
-    const counts = new Map<string, number>();
-
-    pages.forEach((p) => {
-      if (!p.category) return;
-      counts.set(p.category, (counts.get(p.category) ?? 0) + 1);
-    });
-
-    return Array.from(counts.entries())
-      .map(([name, count]) => ({ name, count }))
-      .sort((a, b) => b.count - a.count);
-  }, [pages]);
-
-  // Filtreleme
-  const filteredPages = useMemo(() => {
-    const q = search.trim().toLowerCase();
-
-    return pages.filter((p) => {
-      const cat = p.category || "";
-
-      if (category !== "all" && cat !== category) return false;
-      if (!q) return true;
-
-      const haystack =
-        (p.title || "") + " " + (p.intro || "") + " " + (p.meaning || "");
-
-      return haystack.toLowerCase().includes(q);
-    });
-  }, [pages, search, category]);
-
-  // Görüntülenecek liste
-  const visiblePages = useMemo(() => {
-    const base = search ? filteredPages : shuffle(filteredPages);
-    return base.slice(0, MAX_ITEMS);
-  }, [filteredPages, search]);
-
   return (
-    <main className="min-h-screen bg-gradient-to-br from-[#050509] via-[#05060b] to-[#101319] text-slate-50">
-      {/* NAVBAR */}
-      <nav className="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3 text-sm">
-          {/* LOGO */}
-          <Link href="/" className="group flex flex-col leading-tight select-none">
-            <span className="font-semibold tracking-[0.32em] text-[1.35rem] text-pink-300 drop-shadow-[0_0_12px_rgba(255,100,180,0.55)] group-hover:text-pink-200 transition duration-200">
-              INNER MEANING
-            </span>
-
-            <span className="mt-1 text-[0.63rem] uppercase tracking-[0.28em] text-slate-400 group-hover:text-pink-300/80 transition">
-              a calm meaning library
-            </span>
-
-            <span className="mt-2 h-[2px] w-14 rounded-full bg-gradient-to-r from-pink-400 to-pink-200 opacity-60 group-hover:opacity-90 blur-[1px] group-hover:blur-[2px] transition-all duration-300" />
-          </Link>
-
-          <div className="flex items-center gap-5 text-[0.8rem] text-slate-300">
-            <Link href="/" className="hover:text-slate-50 transition">Home</Link>
-            <Link href="/about" className="hover:text-slate-50 transition">About</Link>
-            <Link href="/library" className="hover:text-slate-50 transition">Library</Link>
-
-            <Link
-              href="/contact"
-              className="px-3 py-1.5 rounded-full hover:text-white hover:bg-slate-800/60 transition"
-            >
-              Contact
-            </Link>
-          </div>
-        </div>
-      </nav>
-
-      <div className="relative mx-auto max-w-5xl px-4 pb-12 pt-8">
-        {/* Glow */}
-        <div className="pointer-events-none fixed inset-0 -z-10">
-          <div className="absolute -top-32 left-1/4 h-72 w-72 rounded-full bg-pink-400/18 blur-3xl" />
-          <div className="absolute top-1/2 -left-20 h-80 w-80 rounded-full bg-slate-400/10 blur-3xl" />
-          <div className="absolute bottom-[-80px] right-0 h-80 w-80 rounded-full bg-rose-300/16 blur-3xl" />
-        </div>
-
-        {/* ÜST BLOK */}
-        <header className="mb-8 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-          <div>
-            <p className="mb-2 text-[0.7rem] tracking-[0.24em] text-slate-400">
-              MODERN MEANING ARCHIVE
+    <main className="min-h-screen px-4 pb-20 pt-16 md:px-8 lg:px-16">
+      <div className="mx-auto flex max-w-6xl flex-col gap-12 lg:gap-16">
+        {/* HERO */}
+        <section className="grid gap-10 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:items-center">
+          <div className="space-y-6">
+            <p className="badge bg-slate-900/70 border border-cyan-400/30 text-cyan-200/90">
+              Inner Meaning • Night-thoughts, signs & mind patterns
             </p>
 
-            <h1 className="text-3xl font-semibold tracking-tight text-slate-50">
-              Understand the strange moments your mind keeps replaying.
-            </h1>
-
-            <p className="mt-3 max-w-xl text-sm text-slate-300">
-              A calm, glassy space that blends spiritual and psychological explanations for dreams, signs and emotions that refuse to be ignored.
-            </p>
-          </div>
-
-          <div className="flex gap-3 text-xs text-slate-200">
-            <InfoPill label="Entries" value={pages.length} />
-            <InfoPill label="Categories" value={categoryStats.length} />
-          </div>
-        </header>
-
-        {/* LAYOUT */}
-        <div className="flex flex-col gap-6 md:flex-row">
-          {/* SOL BLOK */}
-          <div className="flex-1">
-            {/* Arama */}
-            <section className="mb-5 space-y-4">
-              <div className="flex flex-col gap-3 md:flex-row md:items-center">
-                <Input
-                  placeholder="Search feelings, dreams, signs (e.g. 3AM, 11:11, teeth, empty)…"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="bg-slate-950/60 border border-slate-700/80 placeholder:text-slate-500 text-sm shadow-[0_14px_40px_rgba(0,0,0,0.6)]"
-                />
-              </div>
-
-              {/* Filtre */}
-              <div className="flex flex-wrap gap-2 text-[0.75rem]">
-                <FilterChip
-                  label="All"
-                  active={category === "all"}
-                  onClick={() => setCategory("all")}
-                />
-
-                {categoryStats.slice(0, 10).map((cat) => (
-                  <FilterChip
-                    key={cat.name}
-                    label={cat.name}
-                    active={category === cat.name}
-                    onClick={() => setCategory(cat.name)}
-                  />
-                ))}
-              </div>
-
-              <p className="text-[0.7rem] uppercase tracking-[0.18em] text-slate-400">
-                Showing {visiblePages.length} of {filteredPages.length} result
-                {filteredPages.length === 1 ? "" : "s"}
+            <div className="space-y-4">
+              <h1 className="text-balance text-4xl font-semibold tracking-tight md:text-5xl lg:text-6xl">
+                Decode the{" "}
+                <span className="gradient-text font-extrabold">strange patterns</span>{" "}
+                in your life.
+              </h1>
+              <p className="max-w-xl text-sm leading-relaxed text-slate-300 md:text-base">
+                Wake-ups at 3AM, repeating numbers, heavy feelings for no clear
+                reason… Inner Meaning is a calm place to explore the signals
+                your dreams, emotions and mind keep sending you.
               </p>
-            </section>
+            </div>
 
-            {/* Kartlar */}
-            <section className="grid gap-4 md:grid-cols-2">
-              {visiblePages.map((page) => (
-                <Link key={page.slug} href={`/${page.slug}`}>
-                  <Card className="group cursor-pointer border border-slate-700/80 bg-slate-950/70 backdrop-blur-xl shadow-[0_18px_45px_rgba(0,0,0,0.85)] transition-transform duration-200 hover:-translate-y-[4px] hover:scale-[1.02] hover:border-pink-300/80 hover:shadow-[0_26px_70px_rgba(0,0,0,0.95)]">
-                    <CardHeader className="pb-2">
-                      <Badge className="mb-2 border-none bg-slate-800/80 text-[0.6rem] tracking-[0.18em] uppercase text-slate-300">
-                        {(page.category || "").replace(/-/g, " ")}
-                      </Badge>
+            {/* ÇALIŞAN ARAMA FORMU */}
+            <form
+              action="/search"
+              method="GET"
+              className="glass-card glow-hover relative flex items-center gap-3 px-4 py-3.5"
+            >
+              <div className="flex h-9 flex-1 items-center gap-2 rounded-2xl bg-slate-900/80 px-3">
+                <input
+                  type="text"
+                  name="q"
+                  placeholder='Try: "why do i wake up at 3am"'
+                  className="h-full w-full bg-transparent text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none"
+                />
+              </div>
+              <button
+                type="submit"
+                className="inline-flex h-8 items-center rounded-full bg-cyan-500/15 px-3 text-[11px] font-medium uppercase tracking-[0.14em] text-cyan-200 border border-cyan-400/40"
+              >
+                Search
+              </button>
+            </form>
 
-                      <CardTitle className="line-clamp-2 text-sm font-semibold text-slate-50 group-hover:text-pink-100">
-                        {page.title}
-                      </CardTitle>
-                    </CardHeader>
+            <div className="flex flex-wrap gap-2 text-xs text-slate-300/80">
+              <span className="category-pill border-cyan-500/30 bg-cyan-500/10">
+                11:11 & repeating numbers
+              </span>
+              <span className="category-pill border-pink-500/30 bg-pink-500/10">
+                Waking up at 3AM
+              </span>
+              <span className="category-pill border-violet-500/30 bg-violet-500/10">
+                Déjà vu & strange loops
+              </span>
+            </div>
+          </div>
 
-                    <CardContent>
-                      <p className="line-clamp-3 text-[0.8rem] text-slate-300 group-hover:text-slate-100/90">
-                        {page.intro || page.meaning}
+          {/* Yan panel */}
+          <div className="relative">
+            <div className="absolute -inset-6 -z-10 rounded-[2rem] bg-gradient-to-br from-cyan-500/15 via-fuchsia-500/10 to-indigo-500/10 blur-2xl" />
+            <div className="glass-card glow-hover relative h-full w-full space-y-6 p-6">
+              <div className="flex items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-slate-400">
+                    Tonight&apos;s themes
+                  </p>
+                  <p className="text-sm text-slate-100/90">
+                    Dreams, repeating signs, emotional loops.
+                  </p>
+                </div>
+                <span className="inline-flex items-center rounded-full bg-emerald-500/15 px-3 py-1 text-[11px] font-medium text-emerald-200 border border-emerald-400/40">
+                  Calm reading mode
+                </span>
+              </div>
+
+              <div className="space-y-3 text-xs text-slate-300/90">
+                <p>
+                  Pick a category and start with one topic. Each page walks you
+                  through the meaning, spiritual angle, psychological view and
+                  gentle advice.
+                </p>
+                <p className="text-slate-400">
+                  No loud visuals, no dopamine traps — just quiet explanations
+                  while your brain winds down.
+                </p>
+              </div>
+
+              <Link
+                href="/library"
+                className="inline-flex h-10 items-center justify-center rounded-full bg-gradient-to-r from-cyan-400 to-fuchsia-500 px-5 text-xs font-semibold tracking-wide text-slate-950 shadow-lg shadow-cyan-500/40 transition hover:brightness-110"
+              >
+                Browse the Library
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* CATEGORIES */}
+        <section className="space-y-4">
+          <div className="flex items-center justify-between gap-4">
+            <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">
+              Categories
+            </h2>
+            <p className="text-xs text-slate-400">
+              Start with the pattern that bothers you the most.
+            </p>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {CATEGORIES.map((cat) => (
+              <Link
+                key={cat.key}
+                href="/library"
+                className="gradient-border glow-hover group block rounded-3xl bg-slate-950/70 p-[1px]"
+              >
+                <div className="glass-card h-full space-y-3 rounded-[1.45rem] p-4">
+                  <div
+                    className={`inline-flex rounded-full bg-gradient-to-r ${cat.accent} px-[1px] py-[1px]`}
+                  >
+                    <span className="flex items-center rounded-full bg-slate-950/90 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.16em] text-slate-200/90">
+                      {cat.label}
+                    </span>
+                  </div>
+                  <p className="text-xs leading-relaxed text-slate-300 group-hover:text-slate-100">
+                    {cat.description}
+                  </p>
+                  <p className="text-[11px] font-medium text-slate-400 group-hover:text-cyan-300">
+                    Open library →
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* FEATURED TOPICS */}
+        {featuredTopics.length > 0 && (
+          <section className="space-y-4">
+            <div className="flex items-center justify-between gap-4">
+              <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">
+                Featured topics
+              </h2>
+              <Link
+                href="/library"
+                className="text-xs font-medium text-cyan-300 hover:text-cyan-200"
+              >
+                View all →
+              </Link>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {featuredTopics.map((t) => (
+                <Link
+                  key={t.slug}
+                  href={`/${t.slug}`}
+                  className="glass-card glow-hover group block h-full rounded-3xl p-4"
+                >
+                  <div className="space-y-2">
+                    {t.category && (
+                      <span className="category-pill text-[11px]">
+                        {t.category}
+                      </span>
+                    )}
+                    <h3 className="text-sm font-semibold leading-snug group-hover:text-slate-50">
+                      {t.title}
+                    </h3>
+                    {t.focus && (
+                      <p className="text-[11px] leading-relaxed text-slate-400 group-hover:text-slate-200/90">
+                        {t.focus}
                       </p>
-                    </CardContent>
-                  </Card>
+                    )}
+                  </div>
                 </Link>
               ))}
-            </section>
-          </div>
-
-          {/* SAĞ SİDEBAR */}
-          <aside className="md:w-64 shrink-0 space-y-4">
-            <Card className="border border-slate-700/80 bg-slate-950/80 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.9)]">
-              <CardHeader className="pb-2">
-                <p className="text-[0.65rem] uppercase tracking-[0.24em] text-slate-400">
-                  BROWSE BY CATEGORY
-                </p>
-
-                <h2 className="mt-1 text-sm font-semibold text-slate-50">
-                  Tune into a specific pattern.
-                </h2>
-              </CardHeader>
-
-              <CardContent className="space-y-3">
-                {/* ALL BUTTON */}
-                <button
-                  onClick={() => setCategory("all")}
-                  className={`flex w-full items-center justify-between rounded-full px-3 py-1.5 text-xs transition ${
-                    category === "all"
-                      ? "bg-pink-500/20 text-pink-100 border border-pink-400/70 shadow-[0_0_25px_rgba(244,114,182,0.45)]"
-                      : "bg-slate-900/70 text-slate-200 border border-slate-700/80 hover:border-pink-400/70 hover:text-pink-100"
-                  }`}
-                >
-                  <span>All entries</span>
-                  <span className="text-[0.7rem] opacity-80">
-                    {pages.length}
-                  </span>
-                </button>
-
-                {/* CATEGORY BUTTONS */}
-                {categoryStats.slice(0, 10).map((cat) => (
-                  <button
-                    key={cat.name}
-                    onClick={() => setCategory(cat.name)}
-                    className={`flex w-full items-center justify-between rounded-full px-3 py-1.5 text-xs transition ${
-                      category === cat.name
-                        ? "bg-pink-500/20 text-pink-100 border border-pink-400/70 shadow-[0_0_25px_rgba(244,114,182,0.45)]"
-                        : "bg-slate-900/70 text-slate-200 border border-slate-700/80 hover:border-pink-400/70 hover:text-pink-100"
-                    }`}
-                  >
-                    <span className="truncate">{cat.name}</span>
-                    <span className="text-[0.7rem] opacity-80">
-                      {cat.count}
-                    </span>
-                  </button>
-                ))}
-
-                <Link
-                  href="/library"
-                  className="mt-3 block text-[0.7rem] text-slate-400 hover:text-pink-200 transition"
-                >
-                  Open full library →
-                </Link>
-              </CardContent>
-            </Card>
-          </aside>
-        </div>
+            </div>
+          </section>
+        )}
       </div>
-
-      <SiteFooter />
     </main>
-  );
-}
-
-function FilterChip({
-  label,
-  active,
-  onClick,
-}: {
-  label: string;
-  active: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className={`rounded-full border px-3 py-1 text-[0.7rem] tracking-wide transition ${
-        active
-          ? "border-pink-400 bg-pink-500/20 text-pink-100 shadow-[0_0_25px_rgba(244,114,182,0.35)]"
-          : "border-slate-700/80 bg-slate-950/60 text-slate-300 hover:border-pink-300/70 hover:text-pink-100"
-      }`}
-    >
-      {label}
-    </button>
-  );
-}
-
-function InfoPill({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="rounded-2xl border border-slate-700/80 bg-slate-950/70 px-3 py-2 backdrop-blur-xl shadow-[0_16px_36px_rgba(0,0,0,0.8)]">
-      <p className="text-[0.6rem] uppercase tracking-[0.18em] text-slate-400">
-        {label}
-      </p>
-
-      <p className="mt-1 text-sm font-semibold text-slate-50">
-        {value.toString().padStart(2, "0")}
-      </p>
-    </div>
   );
 }
