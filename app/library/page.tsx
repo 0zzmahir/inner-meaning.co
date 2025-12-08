@@ -1,7 +1,9 @@
-import Link from "next/link";
-import topicsRaw from "@/data/topics.json";
+// app/library/page.tsx
+"use client";
 
-export const revalidate = false;
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import topicsRaw from "@/data/topics.json";
 
 type Topic = {
   slug: string;
@@ -40,20 +42,15 @@ const CATEGORY_BLURBS = [
   },
 ];
 
-type LibraryPageProps = {
-  searchParams?: {
-    category?: string;
-  };
-};
-
-export default function LibraryPage({ searchParams }: LibraryPageProps) {
-  const activeCategory = searchParams?.category ?? "";
+export default function LibraryPage() {
+  const searchParams = useSearchParams();
+  const activeCategory = searchParams.get("category") ?? "";
 
   const filteredTopics = activeCategory
     ? topics.filter((t) => t.category === activeCategory)
     : topics;
 
-  // Çok uzun liste olmaması için ilk 60 gösteriyoruz (istersen artırırsın)
+  // Çok uzun liste olmasın diye ilk 60 tanesini gösteriyoruz (istersen artır)
   const visibleTopics = filteredTopics.slice(0, 60);
 
   return (
@@ -68,20 +65,21 @@ export default function LibraryPage({ searchParams }: LibraryPageProps) {
             Inner Meaning Library
           </h1>
           <p className="max-w-2xl text-sm leading-relaxed text-slate-300 md:text-base">
-            Browse all dream meanings, spiritual signals, strange events,
-            emotional patterns and mind loops currently available on Inner
-            Meaning. Use categories or search to narrow things down.
+            A quiet index of all dream meanings, spiritual signals, strange
+            events, emotional patterns and mind loops explored on Inner Meaning.
+            Filter by category below or use the search box for something very
+            specific.
           </p>
         </header>
 
-        {/* SEARCH / INFO SECTION */}
+        {/* SEARCH / INFO */}
         <section className="glass-card space-y-3 rounded-3xl p-6">
           <h2 className="text-lg font-semibold text-slate-50">
             Find a specific meaning
           </h2>
           <p className="text-sm leading-relaxed text-slate-300">
-            You can filter by category below or use the main search for very
-            specific dreams, numbers, signs or situations.
+            Use the categories to browse by theme or search directly for a
+            dream, number, sign or situation that has been on your mind.
           </p>
           <p className="text-xs text-slate-400">
             {activeCategory
@@ -169,11 +167,7 @@ export default function LibraryPage({ searchParams }: LibraryPageProps) {
                     <h3 className="text-sm font-semibold leading-snug group-hover:text-slate-50">
                       {t.title}
                     </h3>
-                    {t.focus && (
-                      <p className="text-[11px] leading-relaxed text-slate-400 group-hover:text-slate-200/90">
-                        {t.focus}
-                      </p>
-                    )}
+                    {/* focus alanını göstermiyoruz; Türkçe olanlar vardı */}
                   </div>
                 </Link>
               ))}
