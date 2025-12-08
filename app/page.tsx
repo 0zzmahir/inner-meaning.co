@@ -1,3 +1,5 @@
+// app/page.tsx
+
 import Link from "next/link";
 import topicsRaw from "@/data/topics.json";
 
@@ -20,7 +22,8 @@ const CATEGORIES = [
   {
     key: "Dream Meanings",
     label: "Dream Meanings",
-    description: "Recurring dreams, vivid symbols, strange characters at night.",
+    description:
+      "Recurring dreams, vivid symbols, strange characters at night.",
     accent: "from-fuchsia-400/80 via-pink-500/70 to-rose-400/80",
   },
   {
@@ -32,13 +35,15 @@ const CATEGORIES = [
   {
     key: "Emotional Signals",
     label: "Emotional Signals",
-    description: "Sudden sadness, emptiness, heavy moods without clear reasons.",
+    description:
+      "Sudden sadness, emptiness, heavy moods without clear reasons.",
     accent: "from-amber-400/80 via-orange-500/70 to-rose-400/80",
   },
   {
     key: "Mind Patterns",
     label: "Mind Patterns",
-    description: "Overthinking loops, repeating relationship patterns, mental noise.",
+    description:
+      "Overthinking loops, repeating relationship patterns, mental noise.",
     accent: "from-lime-400/80 via-emerald-500/70 to-cyan-400/80",
   },
 ];
@@ -59,7 +64,9 @@ export default function HomePage() {
             <div className="space-y-4">
               <h1 className="text-balance text-4xl font-semibold tracking-tight md:text-5xl lg:text-6xl">
                 Decode the{" "}
-                <span className="gradient-text font-extrabold">strange patterns</span>{" "}
+                <span className="gradient-text font-extrabold">
+                  strange patterns
+                </span>{" "}
                 in your life.
               </h1>
               <p className="max-w-xl text-sm leading-relaxed text-slate-300 md:text-base">
@@ -69,7 +76,7 @@ export default function HomePage() {
               </p>
             </div>
 
-            {/* ÇALIŞAN ARAMA FORMU */}
+            {/* SEARCH FORM */}
             <form
               action="/search"
               method="GET"
@@ -104,7 +111,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Yan panel */}
+          {/* SIDE PANEL */}
           <div className="relative">
             <div className="absolute -inset-6 -z-10 rounded-[2rem] bg-gradient-to-br from-cyan-500/15 via-fuchsia-500/10 to-indigo-500/10 blur-2xl" />
             <div className="glass-card glow-hover relative h-full w-full space-y-6 p-6">
@@ -159,7 +166,7 @@ export default function HomePage() {
             {CATEGORIES.map((cat) => (
               <Link
                 key={cat.key}
-                href="/library"
+                href={`/library?category=${encodeURIComponent(cat.key)}`}
                 className="gradient-border glow-hover group block rounded-3xl bg-slate-950/70 p-[1px]"
               >
                 <div className="glass-card h-full space-y-3 rounded-[1.45rem] p-4">

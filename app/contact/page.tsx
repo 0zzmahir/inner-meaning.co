@@ -15,8 +15,35 @@ export default function ContactPage() {
 
         <section className="space-y-4 text-sm leading-relaxed text-slate-300 md:text-base">
           <p>
-            For questions, feedback or collaboration ideas related to Inner
-            Meaning, you can reach out using the email address below.
+            We’re here to help you navigate your questions about dreams, symbols, emotional signals and mind patterns.
+Whether you want to request a new topic, report an issue, collaborate, or simply reach out — we’d love to hear from you.
+
+Email Support
+
+For all inquiries, please contact:
+contact@inner-meaning.com
+
+We aim to respond within 24–48 hours.
+
+Why Contact Us?
+Request New Topics
+
+If you are searching for the meaning of a dream, sign or event that is not yet on our site, send it to us — we may include it in our next update.
+
+Collaborations & Partnerships
+
+We welcome partnerships related to symbolism, psychology, spirituality, wellness platforms and content-driven projects.
+
+Technical Issues
+
+Spotted a broken page, loading error, missing topic or typo? Let us know so we can fix it quickly.
+
+Have a Meaning You Want Explained?
+
+Tell us what you experienced — a dream, a number, a sign, a strange emotional moment —
+and we may publish a full explanation on Inner Meaning.
+
+Send your request now → contact@inner-meaning.com
           </p>
           <p className="text-slate-200">
             Email:{" "}
@@ -24,7 +51,7 @@ export default function ContactPage() {
               href="mailto:hello@inner-meaning.com"
               className="text-cyan-300 hover:text-cyan-200"
             >
-              hello@inner-meaning.com
+              msbyrgn02@gmail.com
             </a>
           </p>
         </section>

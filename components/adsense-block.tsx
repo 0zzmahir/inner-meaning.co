@@ -9,24 +9,27 @@ declare global {
 }
 
 type Props = {
-  slot: string; // AdSense panelinden alacağın data-ad-slot
+  slot: string;
   className?: string;
 };
 
 export function AdsenseBlock({ slot, className }: Props) {
+  const disableAds = process.env.NEXT_PUBLIC_DISABLE_ADS === "true";
+
   useEffect(() => {
+    if (disableAds) return; // Geçici olarak push çalışmasın
     try {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
-    } catch {
-      // sessiz geç
-    }
-  }, []);
+    } catch {}
+  }, [disableAds]);
 
   return (
     <div className={className}>
       <ins
         className="adsbygoogle"
-        style={{ display: "block" }}
+        style={{
+          display: disableAds ? "none" : "block",   // Google DOM’da görecek ama kullanıcı görmeyecek
+        }}
         data-ad-client="ca-pub-8097019883190912"
         data-ad-slot={slot}
         data-ad-format="auto"
