@@ -9,9 +9,9 @@ const path = require("path");
 const fetch = global.fetch || require("node-fetch");
 
 // 🔧 AYARLAR
-const TARGET_TOPIC_COUNT = 11050; // Şimdilik 11K
-const BATCH_SIZE = 100;           // Her API çağrısında kaç topic istensin
-const MAX_RETRIES = 3;
+const TARGET_TOPIC_COUNT = 15000; // Şimdilik 11K
+const BATCH_SIZE = 250;           // Her API çağrısında kaç topic istensin
+const MAX_RETRIES = 5;
 
 // Topic için hızlı + ucuz model
 const MODEL = "amazon/nova-2-lite-v1:free"; // TEK bir model ID olmalı
