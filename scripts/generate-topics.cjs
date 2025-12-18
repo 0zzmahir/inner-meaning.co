@@ -1,6 +1,6 @@
 // scripts/generate-topics.cjs
 // Inner Meaning için OTOMATİK TOPIC FABRİKASI
-// Tek komutla 11K topic'e kadar doldurur, duplicate slug'ları atlar.
+// Tek komutla 100K topic'e kadar doldurur, duplicate slug'ları atlar.
 
 require("dotenv").config();
 
@@ -9,7 +9,7 @@ const path = require("path");
 const fetch = global.fetch || require("node-fetch");
 
 // 🔧 AYARLAR
-const TARGET_TOPIC_COUNT = 15000; // Şimdilik 11K
+const TARGET_TOPIC_COUNT = 15000; // Şimdilik 100K
 const BATCH_SIZE = 250;           // Her API çağrısında kaç topic istensin
 const MAX_RETRIES = 5;
 

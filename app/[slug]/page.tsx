@@ -1,5 +1,6 @@
 // app/[slug]/page.tsx
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { AdsenseBlock } from "@/components/adsense-block";
 
 import rawTopics from "@/data/topics.json";
@@ -51,16 +52,12 @@ const pagesRaw = (rawPages as PageContentRaw[]) || [];
 function normalizePage(raw: PageContentRaw | undefined): PageContent | null {
   if (!raw || !raw.slug) return null;
 
-  const intro =
-    typeof raw.intro === "string" ? raw.intro : "";
-  const meaning =
-    typeof raw.meaning === "string" ? raw.meaning : "";
-  const spiritual =
-    typeof raw.spiritual === "string" ? raw.spiritual : "";
+  const intro = typeof raw.intro === "string" ? raw.intro : "";
+  const meaning = typeof raw.meaning === "string" ? raw.meaning : "";
+  const spiritual = typeof raw.spiritual === "string" ? raw.spiritual : "";
   const psychological =
     typeof raw.psychological === "string" ? raw.psychological : "";
-  const advice =
-    typeof raw.advice === "string" ? raw.advice : "";
+  const advice = typeof raw.advice === "string" ? raw.advice : "";
 
   const possibleCauses = Array.isArray(raw.possibleCauses)
     ? raw.possibleCauses
@@ -81,8 +78,7 @@ function normalizePage(raw: PageContentRaw | undefined): PageContent | null {
   return {
     slug: String(raw.slug),
     title: typeof raw.title === "string" ? raw.title : "",
-    category:
-      typeof raw.category === "string" ? raw.category : undefined,
+    category: typeof raw.category === "string" ? raw.category : undefined,
     intro,
     meaning,
     spiritual,
@@ -102,8 +98,11 @@ for (const p of pagesRaw) {
 export const dynamic = "error";
 export const revalidate = false;
 
+// ✅ Boş içerikli (page olmayan) slug'ları hiç üretme (index + build temizliği)
 export function generateStaticParams() {
-  return topics.map((t) => ({ slug: t.slug }));
+  return topics
+    .filter((t) => pageBySlug.has(t.slug))
+    .map((t) => ({ slug: t.slug }));
 }
 
 function getCombined(slug: string) {
@@ -125,6 +124,7 @@ function getCombined(slug: string) {
   return { slug, topic, page, title, category, description };
 }
 
+// ✅ CANONICAL + gerçek 404 (soft 404 biter)
 export function generateMetadata({
   params,
 }: {
@@ -132,39 +132,39 @@ export function generateMetadata({
 }): Metadata {
   const combined = getCombined(params.slug);
 
+  // slug yoksa = 404
   if (!combined) {
-    return {
-      title: "Not found | Inner Meaning",
-      description: "This topic could not be found on Inner Meaning.",
-    };
+    notFound();
+  }
+
+  // içerik yoksa = 404 (boş sayfa indexlenmesin)
+  if (!combined.page) {
+    notFound();
   }
 
   return {
     title: `${combined.title} | Inner Meaning`,
     description: combined.description,
+    alternates: {
+      canonical: `https://inner-meaning.com/${combined.slug}`,
+    },
   };
 }
 
 export default function TopicPage({ params }: { params: { slug: string } }) {
   const combined = getCombined(params.slug);
 
+  // ✅ GERÇEK 404
   if (!combined) {
-    return (
-      <main className="min-h-screen px-4 py-16 md:px-8 lg:px-16">
-        <div className="mx-auto max-w-3xl space-y-4">
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Topic not found
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            The topic you&apos;re looking for does not exist or has been
-            removed.
-          </p>
-        </div>
-      </main>
-    );
+    notFound();
   }
 
   const { topic, page, title, category } = combined;
+
+  // ✅ içerik yoksa 404 (This page is still being written -> kaldırıldı)
+  if (!page) {
+    notFound();
+  }
 
   return (
     <main className="min-h-screen px-4 py-12 md:px-8 lg:px-16">
@@ -198,116 +198,99 @@ export default function TopicPage({ params }: { params: { slug: string } }) {
         {/* İçerik içi üst reklam */}
         <AdsenseBlock slot="1234567892" className="w-full" />
 
-        {page ? (
-          <div className="space-y-8 text-sm leading-relaxed text-slate-200 md:text-base">
-            {page.intro && (
-              <section className="space-y-2">
-                <h2 className="text-lg font-semibold text-slate-50">
-                  Overview
-                </h2>
-                <p className="text-slate-300">{page.intro}</p>
-              </section>
-            )}
+        <div className="space-y-8 text-sm leading-relaxed text-slate-200 md:text-base">
+          {page.intro && (
+            <section className="space-y-2">
+              <h2 className="text-lg font-semibold text-slate-50">Overview</h2>
+              <p className="text-slate-300">{page.intro}</p>
+            </section>
+          )}
 
-            {page.meaning && (
-              <section className="space-y-2">
-                <h2 className="text-lg font-semibold text-slate-50">
-                  Core Meaning
-                </h2>
-                <p className="whitespace-pre-line text-slate-300">
-                  {page.meaning}
-                </p>
-              </section>
-            )}
+          {page.meaning && (
+            <section className="space-y-2">
+              <h2 className="text-lg font-semibold text-slate-50">
+                Core Meaning
+              </h2>
+              <p className="whitespace-pre-line text-slate-300">
+                {page.meaning}
+              </p>
+            </section>
+          )}
 
-            {/* Ortadaki reklam */}
-            <AdsenseBlock slot="1234567893" className="w-full" />
+          {/* Ortadaki reklam */}
+          <AdsenseBlock slot="1234567893" className="w-full" />
 
-            {page.spiritual && (
-              <section className="space-y-2">
-                <h2 className="text-lg font-semibold text-slate-50">
-                  Spiritual Perspective
-                </h2>
-                <p className="whitespace-pre-line text-slate-300">
-                  {page.spiritual}
-                </p>
-              </section>
-            )}
+          {page.spiritual && (
+            <section className="space-y-2">
+              <h2 className="text-lg font-semibold text-slate-50">
+                Spiritual Perspective
+              </h2>
+              <p className="whitespace-pre-line text-slate-300">
+                {page.spiritual}
+              </p>
+            </section>
+          )}
 
-            {page.psychological && (
-              <section className="space-y-2">
-                <h2 className="text-lg font-semibold text-slate-50">
-                  Psychological Perspective
-                </h2>
-                <p className="whitespace-pre-line text-slate-300">
-                  {page.psychological}
-                </p>
-              </section>
-            )}
+          {page.psychological && (
+            <section className="space-y-2">
+              <h2 className="text-lg font-semibold text-slate-50">
+                Psychological Perspective
+              </h2>
+              <p className="whitespace-pre-line text-slate-300">
+                {page.psychological}
+              </p>
+            </section>
+          )}
 
-            {page.possibleCauses && page.possibleCauses.length > 0 && (
-              <section className="space-y-2">
-                <h2 className="text-lg font-semibold text-slate-50">
-                  Possible Causes
-                </h2>
-                <ul className="list-disc space-y-1 pl-5 text-slate-300">
-                  {page.possibleCauses.map((item, idx) => (
-                    <li key={idx}>{item}</li>
-                  ))}
-                </ul>
-              </section>
-            )}
+          {page.possibleCauses && page.possibleCauses.length > 0 && (
+            <section className="space-y-2">
+              <h2 className="text-lg font-semibold text-slate-50">
+                Possible Causes
+              </h2>
+              <ul className="list-disc space-y-1 pl-5 text-slate-300">
+                {page.possibleCauses.map((item, idx) => (
+                  <li key={idx}>{item}</li>
+                ))}
+              </ul>
+            </section>
+          )}
 
-            {page.advice && (
-              <section className="space-y-2 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-4">
-                <h2 className="text-lg font-semibold text-emerald-100">
-                  Gentle Guidance
-                </h2>
-                <p className="whitespace-pre-line text-emerald-50/90 text-sm md:text-[15px]">
-                  {page.advice}
-                </p>
-              </section>
-            )}
+          {page.advice && (
+            <section className="space-y-2 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-4">
+              <h2 className="text-lg font-semibold text-emerald-100">
+                Gentle Guidance
+              </h2>
+              <p className="whitespace-pre-line text-emerald-50/90 text-sm md:text-[15px]">
+                {page.advice}
+              </p>
+            </section>
+          )}
 
-            {page.faq && page.faq.length > 0 && (
-              <section className="space-y-4 border-t border-slate-800 pt-6">
-                <h2 className="text-lg font-semibold text-slate-50">
-                  Frequently Asked Questions
-                </h2>
-                <div className="space-y-4">
-                  {page.faq.map((item, idx) => (
-                    <div
-                      key={idx}
-                      className="rounded-2xl border border-slate-800/80 bg-slate-900/70 p-4"
-                    >
-                      {item.q && (
-                        <h3 className="text-sm font-medium text-slate-100">
-                          {item.q}
-                        </h3>
-                      )}
-                      {item.a && (
-                        <p className="mt-1 text-sm text-slate-300">
-                          {item.a}
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </section>
-            )}
-          </div>
-        ) : (
-          <section className="space-y-3 rounded-2xl border border-slate-800/80 bg-slate-900/70 p-4 text-sm leading-relaxed text-slate-300 md:text-base">
-            <h2 className="text-sm font-semibold text-slate-100">
-              This page is still being written.
-            </h2>
-            <p>
-              A detailed explanation for this topic is being prepared. For now,
-              this page only shows the title and short focus. You can bookmark
-              it and check again later.
-            </p>
-          </section>
-        )}
+          {page.faq && page.faq.length > 0 && (
+            <section className="space-y-4 border-t border-slate-800 pt-6">
+              <h2 className="text-lg font-semibold text-slate-50">
+                Frequently Asked Questions
+              </h2>
+              <div className="space-y-4">
+                {page.faq.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="rounded-2xl border border-slate-800/80 bg-slate-900/70 p-4"
+                  >
+                    {item.q && (
+                      <h3 className="text-sm font-medium text-slate-100">
+                        {item.q}
+                      </h3>
+                    )}
+                    {item.a && (
+                      <p className="mt-1 text-sm text-slate-300">{item.a}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+        </div>
       </article>
     </main>
   );
