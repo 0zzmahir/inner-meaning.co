@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Script from "next/script";
 import "./globals.css";
 import { AdsenseBlock } from "@/components/adsense-block";
 import topicsRaw from "@/data/topics.json";
@@ -32,6 +33,20 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* ✅ Google Analytics (GA4) */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-E8XCC2PGDX"
+          strategy="afterInteractive"
+        />
+        <Script id="ga4-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-E8XCC2PGDX', { anonymize_ip: true });
+          `}
+        </Script>
+
         {/* AdSense ana kodu – Google’ın istediği tam snippet */}
         <script
           async
