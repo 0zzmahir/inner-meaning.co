@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
-Sitemap: https://inner-meaning.com/sitemap-index.xml
+
+Sitemap: https://inner-meaning.com/sitemap.xml

@@ -32,9 +32,9 @@ function getNextKey() {
 // Not: DeepSeek modeli daha önce hatalı ID nedeniyle 400 döndürmüştü.
 // Bu yüzden en az bir stabil free model aktif tutmak mantıklı.
 const MODELS = [
- "amazon/nova-2-lite-v1:free",
- "google/gemini-2.0-flash-exp:free",
- "qwen/qwen3-coder:free",
+ //"amazon/nova-2-lite-v1:free",
+// "google/gemini-2.0-flash-exp:free",
+ //"qwen/qwen3-coder:free",
  "deepseek/deepseek-r1-0528-qwen3-8b", 
 ].filter(Boolean);
 

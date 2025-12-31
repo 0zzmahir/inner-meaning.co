@@ -3,58 +3,75 @@ export const revalidate = false;
 export default function ContactPage() {
   return (
     <main className="min-h-screen px-4 py-16 md:px-8 lg:px-16">
-      <div className="mx-auto max-w-3xl space-y-6">
+      <div className="mx-auto max-w-3xl space-y-8">
         <header className="space-y-3">
           <p className="badge bg-slate-900/80 border border-slate-700/60 text-[10px] text-slate-300">
             Contact
           </p>
           <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
-            Contact
+            Contact Us
           </h1>
         </header>
 
-        <section className="space-y-4 text-sm leading-relaxed text-slate-300 md:text-base">
+        <section className="space-y-5 text-sm leading-relaxed text-slate-300 md:text-base">
           <p>
-            We’re here to help you navigate your questions about dreams, symbols, emotional signals and mind patterns.
-Whether you want to request a new topic, report an issue, collaborate, or simply reach out — we’d love to hear from you.
-
-Email Support
-
-For all inquiries, please contact:
-contact@inner-meaning.com
-
-We aim to respond within 24–48 hours.
-
-Why Contact Us?
-Request New Topics
-
-If you are searching for the meaning of a dream, sign or event that is not yet on our site, send it to us — we may include it in our next update.
-
-Collaborations & Partnerships
-
-We welcome partnerships related to symbolism, psychology, spirituality, wellness platforms and content-driven projects.
-
-Technical Issues
-
-Spotted a broken page, loading error, missing topic or typo? Let us know so we can fix it quickly.
-
-Have a Meaning You Want Explained?
-
-Tell us what you experienced — a dream, a number, a sign, a strange emotional moment —
-and we may publish a full explanation on Inner Meaning.
-
-Send your request now → contact@inner-meaning.com
+            We’re here to help you with questions about dreams, symbols, emotional
+            signals, and mind patterns. Whether you’d like to request a new topic,
+            report an issue, collaborate, or simply reach out — feel free to
+            contact us using the form below.
           </p>
+
           <p className="text-slate-200">
-            Email:{" "}
+            You can also email us directly at{" "}
             <a
-              href="mailto:hello@inner-meaning.com"
+              href="mailto:contact@inner-meaning.com"
               className="text-cyan-300 hover:text-cyan-200"
             >
-              msbyrgn02@gmail.com
+              contact@inner-meaning.com
             </a>
+            . We typically respond within 24–48 hours.
           </p>
         </section>
+
+        {/* CONTACT FORM */}
+        <form
+          action="https://formspree.io/f/mqeakajz"
+          method="POST"
+          className="space-y-4 rounded-lg border border-slate-700/60 bg-slate-900/40 p-6"
+        >
+          <div>
+            <label className="mb-1 block text-sm text-slate-300">
+              Your email
+            </label>
+            <input
+              type="email"
+              name="email"
+              required
+              className="w-full rounded border border-slate-700 bg-slate-950 p-2 text-slate-200"
+              placeholder="you@example.com"
+            />
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm text-slate-300">
+              Message
+            </label>
+            <textarea
+              name="message"
+              required
+              rows={5}
+              className="w-full rounded border border-slate-700 bg-slate-950 p-2 text-slate-200"
+              placeholder="Write your message here..."
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="rounded bg-cyan-600 px-4 py-2 font-medium text-white hover:bg-cyan-500"
+          >
+            Send Message
+          </button>
+        </form>
       </div>
     </main>
   );

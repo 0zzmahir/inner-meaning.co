@@ -9,12 +9,12 @@ const path = require("path");
 const fetch = global.fetch || require("node-fetch");
 
 // 🔧 AYARLAR
-const TARGET_TOPIC_COUNT = 15000; // Şimdilik 100K
-const BATCH_SIZE = 250;           // Her API çağrısında kaç topic istensin
+const TARGET_TOPIC_COUNT = 20000; // Şimdilik 100K
+const BATCH_SIZE = 150;           // Her API çağrısında kaç topic istensin
 const MAX_RETRIES = 5;
 
 // Topic için hızlı + ucuz model
-const MODEL = "amazon/nova-2-lite-v1:free"; // TEK bir model ID olmalı
+const MODEL = "deepseek/deepseek-r1-0528-qwen3-8b"; // TEK bir model ID olmalı
 const API_URL = "https://openrouter.ai/api/v1/chat/completions";
 const API_KEY = process.env.OPENROUTER_API_KEY;
 
