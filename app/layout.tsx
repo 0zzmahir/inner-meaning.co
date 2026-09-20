@@ -53,6 +53,16 @@ export default function RootLayout({
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8097019883190912"
           crossOrigin="anonymous"
         ></script>
+
+        {/* Profitableratecpmnetwork – global ad scripts */}
+        <Script
+          src="https://pl31422303.profitableratecpmnetwork.com/39/58/6c/39586c6221787993af7c70b541abfb3c.js"
+          strategy="afterInteractive"
+        />
+        <Script
+          src="https://pl31422306.profitableratecpmnetwork.com/37/6a/6d/376a6d3ae41f1254b374910285fc10a2.js"
+          strategy="afterInteractive"
+        />
       </head>
       <body>
         <div className="flex min-h-screen flex-col">
@@ -62,6 +72,26 @@ export default function RootLayout({
           <AdsenseBlock
             slot="1234567890" // Gerçek slot id ile değiştir
             className="mx-auto mt-3 w-full max-w-6xl px-4 md:px-8 lg:px-16"
+          />
+
+          {/* Profitableratecpmnetwork – native ad container */}
+          <div
+            id="container-756ee30653bfdf69851ce79cd7fc2900"
+            className="mx-auto mt-4 w-full max-w-6xl px-4 md:px-8 lg:px-16"
+          >
+            <script
+              async
+              data-cfasync="false"
+              src="https://pl31422304.profitableratecpmnetwork.com/756ee30653bfdf69851ce79cd7fc2900/invoke.js"
+            ></script>
+          </div>
+
+          {/* HighRevenueFormat – 300x250 */}
+          <AdHighRevenue
+            keyId="71c99e43f3dfb0b0e0ae2f6a1c22a2a5"
+            width={300}
+            height={250}
+            className="mx-auto mt-5"
           />
 
           <main className="flex-1">{children}</main>
@@ -128,6 +158,49 @@ function SiteHeader() {
   );
 }
 
+
+type AdHighRevenueProps = {
+  keyId: string;
+  width: number;
+  height: number;
+  className?: string;
+};
+
+function AdHighRevenue({
+  keyId,
+  width,
+  height,
+  className = "",
+}: AdHighRevenueProps) {
+  return (
+    <div
+      className={className}
+      style={{
+        width: `${width}px`,
+        minHeight: `${height}px`,
+        maxWidth: "100%",
+      }}
+    >
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+            atOptions = {
+              'key' : '${keyId}',
+              'format' : 'iframe',
+              'height' : ${height},
+              'width' : ${width},
+              'params' : {}
+            };
+          `,
+        }}
+      />
+      <script
+        src={`https://www.highrevenueformat.com/${keyId}/invoke.js`}
+      />
+    </div>
+  );
+}
+
 function SiteFooter() {
   const year = new Date().getFullYear();
 
@@ -138,6 +211,57 @@ function SiteFooter() {
         slot="1234567891" // Gerçek slot id ile değiştir
         className="mx-auto mt-6 w-full max-w-6xl px-4 md:px-8 lg:px-16"
       />
+
+      {/* HighRevenueFormat – 468x60 */}
+      <AdHighRevenue
+        keyId="c5772892dc6a2b626cba7962ee8e2acc"
+        width={468}
+        height={60}
+        className="mx-auto mt-5 max-w-full overflow-x-auto"
+      />
+
+      {/* HighRevenueFormat – 728x90 */}
+      <AdHighRevenue
+        keyId="6662829b8e0a8c3013b05e2a40082f3d"
+        width={728}
+        height={90}
+        className="mx-auto mt-5 max-w-full overflow-x-auto"
+      />
+
+      {/* HighRevenueFormat – 320x50 */}
+      <AdHighRevenue
+        keyId="c5b3c4cf731c9ae18eb1e57cf55b96b0"
+        width={320}
+        height={50}
+        className="mx-auto mt-5 max-w-full overflow-x-auto"
+      />
+
+      {/* HighRevenueFormat – 160x600 + 160x300 */}
+      <div className="mx-auto mt-6 flex max-w-6xl flex-col items-center justify-center gap-6 px-4 md:flex-row">
+        <AdHighRevenue
+          keyId="936f75e6cc884975d628b757a82b37a2"
+          width={160}
+          height={600}
+        />
+        <AdHighRevenue
+          keyId="f4b235293526d12c23d69f488326008d"
+          width={160}
+          height={300}
+        />
+      </div>
+
+      {/* Profitableratecpmnetwork – direct-link ad.
+          A bare URL cannot render an ad by itself, so it is exposed as a sponsored link. */}
+      <div className="mx-auto mt-6 max-w-6xl px-4 text-center">
+        <a
+          href="https://www.profitableratecpmnetwork.com/txri69ip?key=ced71b3be1a999affc60c09f92a20bb1"
+          target="_blank"
+          rel="nofollow sponsored noopener noreferrer"
+          className="text-[10px] text-slate-600 hover:text-slate-400"
+        >
+          Sponsored
+        </a>
+      </div>
 
       <div className="mx-auto max-w-6xl px-4 pb-6 pt-8 md:px-8 lg:px-16">
         {/* Üst grid */}
